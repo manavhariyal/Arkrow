@@ -29,6 +29,8 @@ export function Hero() {
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1.0] }}
       className="pt-28 pb-10 relative z-10"
     >
+      <MoneyCard />
+
       <p
         className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mb-5"
         style={{
@@ -84,6 +86,57 @@ function Stat({ label, value }: { label: string; value: string }) {
         {value}
       </div>
       <div className="text-[11px] mt-0.5" style={{ color: 'var(--muted)' }}>{label}</div>
+    </div>
+  )
+}
+
+/** Decorative-but-true card: how a 5 USDC job splits (numbers from a real test job on Arc Testnet). */
+function MoneyCard() {
+  const steps = ['Locked', 'Proof', 'Released']
+  return (
+    <div
+      className="hidden lg:block absolute right-0 top-32 w-[330px] card p-5"
+      style={{ transform: 'rotate(1.5deg)' }}
+      aria-hidden
+    >
+      <div className="flex items-center justify-between">
+        <span className="font-mono text-xs" style={{ color: 'var(--muted)' }}>Example job</span>
+        <span
+          className="text-[11px] font-medium px-2.5 py-0.5 rounded-full"
+          style={{ background: 'var(--green-light)', border: '1px solid var(--green-border)', color: 'var(--green)' }}
+        >
+          Released
+        </span>
+      </div>
+
+      <p className="font-serif text-5xl mt-3 tabular" style={{ color: 'var(--ink)', lineHeight: 1 }}>
+        5.00 <span className="text-xl" style={{ color: 'var(--ink-2)' }}>USDC</span>
+      </p>
+      <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>locked in escrow</p>
+
+      <div
+        className="flex h-3 mt-5 rounded-full overflow-hidden"
+        style={{ border: '1.5px solid var(--ink)' }}
+      >
+        <div style={{ width: '97.5%', background: 'var(--saffron)' }} />
+        <div style={{ width: '2.5%', background: 'var(--ink)' }} />
+      </div>
+      <div className="flex justify-between mt-2 text-xs tabular">
+        <span style={{ color: 'var(--ink)' }}>Worker <b className="font-mono">4.8750</b></span>
+        <span style={{ color: 'var(--ink-2)' }}>Fee 2.5% <b className="font-mono">0.1250</b></span>
+      </div>
+
+      <div className="flex items-center mt-5 pt-4" style={{ borderTop: '1px dashed var(--border-strong)' }}>
+        {steps.map((st, i) => (
+          <div key={st} className="flex items-center flex-1 last:flex-none">
+            <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--ink)' }}>
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: i === 2 ? 'var(--coral)' : 'var(--ink)' }} />
+              {st}
+            </span>
+            {i < steps.length - 1 && <span className="flex-1 mx-2 h-px" style={{ background: 'var(--ink)', opacity: 0.35 }} />}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
