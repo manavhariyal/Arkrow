@@ -13,6 +13,7 @@ import { PostJob }      from './components/PostJob'
 import { ActivityFeed } from './components/ActivityFeed'
 import { JobsTable }    from './components/JobsTable'
 import { AgentCard }    from './components/AgentCard'
+import { BuilderCard }  from './components/BuilderCard'
 import Landing          from './pages/Landing'
 
 function AppPage() {
@@ -48,6 +49,8 @@ function AppPage() {
           </div>
 
         </div>
+
+        <BuilderCard />
       </main>
 
       {/* Subtle footer rule */}
