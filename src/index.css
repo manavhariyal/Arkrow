@@ -3,28 +3,34 @@
 @tailwind utilities;
 
 :root {
-  --bg:            #F6F4EF;
-  --surface:       #FFFFFF;
-  --surface-muted: #FAF9F6;
-  --border:        #E4E0D8;
-  --border-strong: #CCC8BF;
-  --ink:           #17181B;
-  --ink-2:         #4A4B50;
-  --muted:         #8A8880;
-  --green:         #1B7F5C;
-  --green-light:   #EAF5F0;
-  --green-border:  #B8DDD1;
-  --rose:          #C0444A;
-  --rose-light:    #FAEAEA;
-  --rose-border:   #E8B4B6;
-  --amber:         #A0620E;
-  --amber-light:   #FDF3E0;
-  --amber-border:  #E8D09A;
-  --sky:           #2563A8;
-  --sky-light:     #EBF3FD;
-  --sky-border:    #B3CFED;
-  --gray-light:    #F1EFE9;
-  --gray-border:   #D4D0C8;
+  /* Same paper-and-ink palette as the landing page */
+  --bg:            linear-gradient(180deg, #F8E4C8 0, #FBF6EC 460px) #FBF6EC;
+  --surface:       #FFFDF8;
+  --surface-muted: #F6EFE0;
+  --border:        #DDD0B8;
+  --border-strong: #B9AB90;
+  --ink:           #1B1A19;
+  --ink-2:         #4B4843;
+  --muted:         #857F73;
+  --saffron:       #F4B93E;
+  --peach:         #F6DDBF;
+  --coral:         #E2553F;
+
+  --green:         #2F6B45;
+  --green-light:   #E6F0E3;
+  --green-border:  #B5CFB0;
+  --rose:          #B8402D;
+  --rose-light:    #FBE6DF;
+  --rose-border:   #EDB5A6;
+  --amber:         #8A5A0A;
+  --amber-light:   #FCEBC4;
+  --amber-border:  #EBC877;
+  /* "sky" is used for the Open status: now a neutral paper tone, no blue */
+  --sky:           #1B1A19;
+  --sky-light:     #F6EBD8;
+  --sky-border:    #CDBA97;
+  --gray-light:    #EFE9DC;
+  --gray-border:   #D2C8B3;
 }
 
 * {
@@ -35,7 +41,7 @@ body {
   margin: 0;
   min-height: 100dvh;
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: var(--bg);
+  background-color: #FBF6EC;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
@@ -43,17 +49,58 @@ body {
 /* Typography */
 .font-serif {
   font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
 }
 
 .font-mono {
   font-family: 'JetBrains Mono', 'Menlo', monospace;
 }
 
-/* Card base */
+/* Card base: ink outline with a soft peach offset, like the landing page */
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 4px 4px 0 var(--peach);
+}
+
+/* Buttons: pill shape everywhere in the app */
+header button,
+main button {
+  border-radius: 999px !important;
+  cursor: pointer;
+}
+header button:disabled,
+main button:disabled {
+  cursor: not-allowed;
+}
+
+/* Dark primary buttons get the saffron offset shadow and lift on hover */
+header button[style*="background: var(--ink)"],
+main button[style*="background: var(--ink)"] {
+  box-shadow: 3px 3px 0 var(--saffron);
+  transition: transform .15s, box-shadow .15s !important;
+}
+header button[style*="background: var(--ink)"]:hover:not(:disabled),
+main button[style*="background: var(--ink)"]:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--saffron);
+  opacity: 1 !important;
+}
+header button[style*="background: var(--ink)"]:active:not(:disabled),
+main button[style*="background: var(--ink)"]:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--saffron);
+}
+header button[style*="background: var(--ink)"]:disabled,
+main button[style*="background: var(--ink)"]:disabled {
+  box-shadow: none;
+}
+
+/* Keyboard focus */
+:focus-visible {
+  outline: 3px solid var(--coral);
+  outline-offset: 2px;
 }
 
 /* Scrollbar */
