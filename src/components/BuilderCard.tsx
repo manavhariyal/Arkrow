@@ -12,10 +12,15 @@ async function copyDiscord() {
   }
 }
 
-export function BuilderCard() {
+export function BuilderCard({ variant = 'light' }: { variant?: 'light' | 'dark' }) {
+  const dark = variant === 'dark'
+  const fg = dark ? '#FFFCF5' : 'var(--ink)'
+  const fg2 = dark ? '#D9D3C7' : 'var(--ink-2)'
+  const muted = dark ? '#A8A195' : 'var(--muted)'
   return (
     <section
-      className="card mt-12 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-5 justify-between"
+      className={`${dark ? '' : 'card'} p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-5 justify-between ${dark ? 'mb-2' : 'mt-12'}`}
+      style={dark ? { background: '#26241F', border: '1.5px solid rgba(255,252,245,0.28)', borderRadius: 16, flexBasis: '100%' } : undefined}
       aria-label="About the builder"
     >
       <div className="flex items-center gap-4 min-w-0">
@@ -25,14 +30,14 @@ export function BuilderCard() {
           width={56}
           height={56}
           className="shrink-0 w-14 h-14 rounded-full object-cover"
-          style={{ border: '1.5px solid var(--ink)' }}
+          style={{ border: `1.5px solid ${dark ? '#FFFCF5' : 'var(--ink)'}` }}
         />
         <div className="min-w-0">
-          <p className="text-xs" style={{ color: 'var(--muted)' }}>Built by</p>
-          <p className="font-serif text-3xl leading-none mt-1" style={{ color: 'var(--ink)' }}>
+          <p className="text-xs" style={{ color: muted }}>Built by</p>
+          <p className="font-serif text-3xl leading-none mt-1" style={{ color: fg }}>
             Manav Hariyal
           </p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs" style={{ color: 'var(--ink-2)' }}>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs" style={{ color: fg2 }}>
             <a
               href={X_URL}
               target="_blank"
@@ -76,10 +81,10 @@ export function BuilderCard() {
         rel="noopener noreferrer"
         className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium"
         style={{
-          background: 'var(--ink)',
-          color: '#FFFCF5',
+          background: dark ? '#F4B93E' : 'var(--ink)',
+          color: dark ? '#1B1A19' : '#FFFCF5',
           borderRadius: 999,
-          boxShadow: '3px 3px 0 var(--saffron)',
+          boxShadow: dark ? 'none' : '3px 3px 0 var(--saffron)',
           textDecoration: 'none',
         }}
       >
