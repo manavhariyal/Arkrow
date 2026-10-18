@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg:            #F6F4EF;
+  --surface:       #FFFFFF;
+  --surface-muted: #FAF9F6;
+  --border:        #E4E0D8;
+  --border-strong: #CCC8BF;
+  --ink:           #17181B;
+  --ink-2:         #4A4B50;
+  --muted:         #8A8880;
+  --green:         #1B7F5C;
+  --green-light:   #EAF5F0;
+  --green-border:  #B8DDD1;
+  --rose:          #C0444A;
+  --rose-light:    #FAEAEA;
+  --rose-border:   #E8B4B6;
+  --amber:         #A0620E;
+  --amber-light:   #FDF3E0;
+  --amber-border:  #E8D09A;
+  --sky:           #2563A8;
+  --sky-light:     #EBF3FD;
+  --sky-border:    #B3CFED;
+  --gray-light:    #F1EFE9;
+  --gray-border:   #D4D0C8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography */
+.font-serif {
+  font-family: 'Instrument Serif', Georgia, serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', 'Menlo', monospace;
+}
+
+/* Card base */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Numeric tabular */
+.tabular { font-variant-numeric: tabular-nums; }
