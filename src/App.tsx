@@ -14,6 +14,7 @@ import { ActivityFeed } from './components/ActivityFeed'
 import { JobsTable }    from './components/JobsTable'
 import { AgentCard }    from './components/AgentCard'
 import { BuilderCard }  from './components/BuilderCard'
+import { TryIt }        from './components/TryIt'
 import Landing          from './pages/Landing'
 
 function AppPage() {
@@ -38,6 +39,7 @@ function AppPage() {
 
           {/* Left column */}
           <div className="lg:col-span-1 flex flex-col gap-6">
+            <TryIt />
             <PostJob onJobCreated={bump} />
             <AgentCard />
           </div>
