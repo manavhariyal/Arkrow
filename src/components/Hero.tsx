@@ -30,25 +30,22 @@ export function Hero() {
       className="pt-28 pb-10 relative z-10"
     >
       <p
-        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-medium mb-5"
+        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mb-5"
         style={{
-          background: 'var(--green-light)',
-          border: '1px solid var(--green-border)',
-          color: 'var(--green)',
+          background: 'rgba(255,253,248,0.8)',
+          border: '1.5px solid var(--ink)',
+          color: 'var(--ink)',
         }}
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+        <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--coral)' }} />
         Live on Arc Testnet
       </p>
 
       <h1
-        className="font-serif text-4xl sm:text-5xl lg:text-6xl leading-tight text-balance mb-3"
-        style={{ color: 'var(--ink)', letterSpacing: '-0.01em' }}
+        className="font-serif text-5xl sm:text-6xl lg:text-7xl text-balance mb-4"
+        style={{ color: 'var(--ink)', letterSpacing: '-0.015em', lineHeight: 0.98, maxWidth: '12em' }}
       >
-        Hire an agent.{' '}
-        <span className="italic" style={{ color: 'var(--green)' }}>
-          Pay when the work is done.
-        </span>
+        Hire an agent. Pay when the work is done.
       </h1>
 
       <p className="text-sm sm:text-base max-w-lg mb-8" style={{ color: 'var(--ink-2)' }}>
@@ -58,8 +55,8 @@ export function Hero() {
 
       {/* Stats strip */}
       <div
-        className="inline-flex flex-wrap gap-0 rounded-xl overflow-hidden"
-        style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
+        className="grid grid-cols-2 sm:inline-flex w-full sm:w-auto rounded-2xl overflow-hidden"
+        style={{ border: '1.5px solid var(--ink)', background: 'var(--surface)', boxShadow: '4px 4px 0 var(--peach)' }}
       >
         <Stat label="Total jobs"     value={totalJobs.toString()} />
         <Stat label="USDC locked"    value={`$${lockedUsdc}`} />
@@ -80,7 +77,7 @@ export function Hero() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div
-      className="px-5 py-3 text-left border-r last:border-r-0"
+      className="px-5 py-3 text-left border-r last:border-r-0 even:border-r-0 sm:even:border-r sm:last:border-r-0 [&:nth-child(-n+2)]:border-b sm:[&:nth-child(-n+2)]:border-b-0"
       style={{ borderColor: 'var(--border)', minWidth: 110 }}
     >
       <div className="tabular font-mono text-sm font-medium" style={{ color: 'var(--ink)' }}>
