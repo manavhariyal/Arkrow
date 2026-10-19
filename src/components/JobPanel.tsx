@@ -39,6 +39,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
   const [proofText, setProofText]   = useState('')
   const [checkText, setCheckText]   = useState('')
   const [proofContent, setProofContent] = useState<string | null>(null)
+  const [proofNote, setProofNote] = useState('')
   const publicClient = usePublicClient({ chainId: ARKROW_CHAIN_ID })
   const [actionError, setActionError] = useState('')
 
@@ -49,6 +50,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
     let cancelled = false
     async function load() {
       setProofContent(null)
+      setProofNote('')
       if (!publicClient || !proofHashOnChain || proofHashOnChain === ZERO_HASH) return
       const event = parseAbiItem('event ProofSubmitted(uint256 indexed jobId, bytes32 proofHash)')
       try {
@@ -60,16 +62,16 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
           logs = await publicClient.getLogs({ address: ARKROW_ADDRESS, event, args: { jobId }, fromBlock: latest > 200000n ? latest - 200000n : 0n, toBlock: 'latest' })
         }
         const last = logs[logs.length - 1]
-        if (!last) return
+        if (!last) { if (!cancelled) setProofNote('No ProofSubmitted event found for this job.'); return }
         const tx = await publicClient.getTransaction({ hash: last.transactionHash })
         // selector (4 bytes) + jobId (32) + proofHash (32) = 68 bytes = 136 hex chars after 0x
         const extra = tx.input.slice(2 + 136)
-        if (!extra) return
+        if (!extra) { if (!cancelled) setProofNote('The submit transaction carried no proof text (it was sent before the update).'); return }
         const text = hexToString(('0x' + extra) as `0x${string}`)
-        if (keccak256(toBytes(text)) !== proofHashOnChain) return
+        if (keccak256(toBytes(text)) !== proofHashOnChain) { if (!cancelled) setProofNote('Attached text does not match the stored fingerprint.'); return }
         if (!cancelled) setProofContent(text)
-      } catch {
-        /* proof text unavailable; the manual check box still works */
+      } catch (e) {
+        if (!cancelled) setProofNote('Could not read from the network: ' + (e instanceof Error ? e.message.slice(0, 160) : 'unknown error'))
       }
     }
     void load()
@@ -221,6 +223,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
               <>
               <div className="text-[11px] mt-2" style={{ color: 'var(--muted)' }}>
                 The proof text could not be loaded automatically. Ask the worker for the link or text and paste it below to confirm it is the exact one they submitted.
+                {proofNote && <div className="mt-1 font-mono break-words">Reason: {proofNote}</div>}
               </div>
               <input
                 type="text"
