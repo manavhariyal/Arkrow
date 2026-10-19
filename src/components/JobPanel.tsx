@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSwitchChain, usePublicClient } from 'wagmi'
+import { useState } from 'react'
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi'
 import { motion, AnimatePresence } from 'framer-motion'
-import { keccak256, toBytes, toHex, hexToString, parseAbiItem } from 'viem'
+import { keccak256, toBytes } from 'viem'
 import {
   ARKROW_ADDRESS, ARKROW_ABI, ARKROW_CHAIN_ID,
   formatNativeUsdc, shortenAddr, buildExplorerTx,
@@ -38,54 +38,27 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
 
   const [proofText, setProofText]   = useState('')
   const [checkText, setCheckText]   = useState('')
-  const [proofContent, setProofContent] = useState<string | null>(null)
-  const [proofNote, setProofNote] = useState('')
-  const publicClient = usePublicClient({ chainId: ARKROW_CHAIN_ID })
   const [actionError, setActionError] = useState('')
 
-  const proofHashOnChain = job?.proofHash
-
-  // Read the proof text the worker attached to their submit transaction (public on-chain data).
-  useEffect(() => {
-    let cancelled = false
-    async function load() {
-      setProofContent(null)
-      setProofNote('')
-      if (!publicClient || !proofHashOnChain || proofHashOnChain === ZERO_HASH) return
-      const event = parseAbiItem('event ProofSubmitted(uint256 indexed jobId, bytes32 proofHash)')
-      try {
-        let logs
-        try {
-          logs = await publicClient.getLogs({ address: ARKROW_ADDRESS, event, args: { jobId }, fromBlock: 0n, toBlock: 'latest' })
-        } catch {
-          const latest = await publicClient.getBlockNumber()
-          logs = await publicClient.getLogs({ address: ARKROW_ADDRESS, event, args: { jobId }, fromBlock: latest > 200000n ? latest - 200000n : 0n, toBlock: 'latest' })
-        }
-        const last = logs[logs.length - 1]
-        if (!last) { if (!cancelled) setProofNote('No ProofSubmitted event found for this job.'); return }
-        const tx = await publicClient.getTransaction({ hash: last.transactionHash })
-        // selector (4 bytes) + jobId (32) + proofHash (32) = 68 bytes = 136 hex chars after 0x
-        const extra = tx.input.slice(2 + 136)
-        if (!extra) { if (!cancelled) setProofNote('The submit transaction carried no proof text (it was sent before the update).'); return }
-        const text = hexToString(('0x' + extra) as `0x${string}`)
-        if (keccak256(toBytes(text)) !== proofHashOnChain) { if (!cancelled) setProofNote('Attached text does not match the stored fingerprint.'); return }
-        if (!cancelled) setProofContent(text)
-      } catch (e) {
-        if (!cancelled) setProofNote('Could not read from the network: ' + (e instanceof Error ? e.message.slice(0, 160) : 'unknown error'))
-      }
-    }
-    void load()
-    return () => { cancelled = true }
-  }, [publicClient, proofHashOnChain, jobId])
+  // Proof text the worker attached (stored in the contract, read with a plain call).
+  const { data: proofTextData } = useReadContract({
+    address: ARKROW_ADDRESS,
+    abi: ARKROW_ABI,
+    functionName: 'proofText',
+    args: [jobId],
+    chainId: ARKROW_CHAIN_ID,
+    query: { enabled: !!job && job.proofHash !== ZERO_HASH },
+  })
+  const proofContent = typeof proofTextData === 'string' && proofTextData.length > 0 ? proofTextData : null
 
   function refetchAndNotify() {
     void refetch()
     onAction?.()
   }
 
-  type CallFn = 'approve' | 'dispute' | 'refund' | 'release' | 'expireDispute' | 'submitProof'
+  type CallFn = 'approve' | 'dispute' | 'refund' | 'release' | 'expireDispute' | 'submitProof' | 'submitProofWithText'
 
-  function call(functionName: CallFn, args: readonly [bigint] | readonly [bigint, `0x${string}`], dataSuffix?: `0x${string}`) {
+  function call(functionName: CallFn, args: readonly [bigint] | readonly [bigint, `0x${string}`] | readonly [bigint, string]) {
     setActionError('')
     writeContract({
       address: ARKROW_ADDRESS,
@@ -93,7 +66,6 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
       functionName,
       args,
       chainId: ARKROW_CHAIN_ID,
-      ...(dataSuffix ? { dataSuffix } : {}),
     }, {
       onSuccess() { refetchAndNotify() },
       onError(e) { setActionError(e.message) },
@@ -103,10 +75,8 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
   function submitProof() {
     if (!proofText.trim()) { setActionError('Paste a proof string or URL.'); return }
     const text = proofText.trim()
-    if (text.length > 500) { setActionError('Proof is too long. Keep it under 500 characters (a link is best).'); return }
-    const proofHash32 = keccak256(toBytes(text))
-    // The text rides along in the transaction so the buyer can read it in the app.
-    call('submitProof', [jobId, proofHash32] as const, toHex(text))
+    if (new TextEncoder().encode(text).length > 280) { setActionError('Proof is too long. Keep it under 280 characters (a link is best).'); return }
+    call('submitProofWithText', [jobId, text] as const)
   }
 
   if (!job) {
@@ -222,8 +192,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
               ) : (
               <>
               <div className="text-[11px] mt-2" style={{ color: 'var(--muted)' }}>
-                The proof text could not be loaded automatically. Ask the worker for the link or text and paste it below to confirm it is the exact one they submitted.
-                {proofNote && <div className="mt-1 font-mono break-words">Reason: {proofNote}</div>}
+                This job has a proof fingerprint only (no readable text). Ask the worker for the link or text and paste it below to confirm it is the exact one they submitted.
               </div>
               <input
                 type="text"
@@ -478,6 +447,8 @@ function parseErr(msg?: string): string {
   if (m.includes('deadlinealreadypassed')) return 'Deadline has already passed.'
   if (m.includes('disputenotexpired'))   return 'Dispute expiry has not passed yet.'
   if (m.includes('disputealreadyexpired')) return 'Dispute has already expired.'
+  if (m.includes('prooftextempty'))      return 'Write the proof (a link or short text) first.'
+  if (m.includes('prooftexttoolong'))    return 'Proof is too long. Keep it under 280 characters.'
   return 'Transaction failed. Try again.'
 }
 
