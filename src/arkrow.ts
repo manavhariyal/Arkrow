@@ -3,7 +3,7 @@
  * Deployed on Arc Testnet.
  */
 
-export const ARKROW_ADDRESS = '0x0b285c66b8a97f3457b18333200d6b2d8761cfe5' as const
+export const ARKROW_ADDRESS = '0x43306ffe307f5cbcacb017caef66c1cc95367d5c' as const
 
 export const ARKROW_CHAIN_ID = 5042002 // Arc Testnet
 
