@@ -3,7 +3,7 @@
  * Deployed on Arc Testnet.
  */
 
-export const ARKROW_ADDRESS = '0x43306ffe307f5cbcacb017caef66c1cc95367d5c' as const
+export const ARKROW_ADDRESS = '0x44e6aab4a0850b7cbe8c1502ffbabff9dc46ee7c' as const
 
 export const ARKROW_CHAIN_ID = 5042002 // Arc Testnet
 
@@ -92,7 +92,22 @@ export const ARKROW_ABI = [
     "inputs": [], "outputs": [{ "name": "", "type": "uint256" }],
     "stateMutability": "view"
   },
+  {
+    "type": "function", "name": "proofText",
+    "inputs": [{ "name": "", "type": "uint256" }],
+    "outputs": [{ "name": "", "type": "string" }],
+    "stateMutability": "view"
+  },
   // write
+  {
+    "type": "function", "name": "submitProofWithText",
+    "inputs": [
+      { "name": "jobId", "type": "uint256" },
+      { "name": "text",  "type": "string"  }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
   {
     "type": "function", "name": "createJob",
     "inputs": [
