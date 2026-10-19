@@ -82,6 +82,16 @@ export const ARKROW_ABI = [
     "outputs": [{ "name": "", "type": "uint256" }],
     "stateMutability": "view"
   },
+  {
+    "type": "function", "name": "paused",
+    "inputs": [], "outputs": [{ "name": "", "type": "bool" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function", "name": "maxJobAmount",
+    "inputs": [], "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
   // write
   {
     "type": "function", "name": "createJob",
