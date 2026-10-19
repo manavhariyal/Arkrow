@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi'
+import { useState, useEffect } from 'react'
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSwitchChain, usePublicClient } from 'wagmi'
 import { motion, AnimatePresence } from 'framer-motion'
-import { keccak256, toBytes } from 'viem'
+import { keccak256, toBytes, toHex, hexToString, parseAbiItem } from 'viem'
 import {
   ARKROW_ADDRESS, ARKROW_ABI, ARKROW_CHAIN_ID,
   formatNativeUsdc, shortenAddr, buildExplorerTx,
@@ -10,6 +10,7 @@ import {
 import { StatusBadge } from './StatusBadge'
 
 // Snapshot at module load — stable for the session, avoids impure-in-render lint
+const ZERO_HASH = `0x${'0'.repeat(64)}`
 const NOW_SECS = Math.floor(Date.now() / 1000)
 
 interface Props {
@@ -37,7 +38,43 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
 
   const [proofText, setProofText]   = useState('')
   const [checkText, setCheckText]   = useState('')
+  const [proofContent, setProofContent] = useState<string | null>(null)
+  const publicClient = usePublicClient({ chainId: ARKROW_CHAIN_ID })
   const [actionError, setActionError] = useState('')
+
+  const proofHashOnChain = job?.proofHash
+
+  // Read the proof text the worker attached to their submit transaction (public on-chain data).
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      setProofContent(null)
+      if (!publicClient || !proofHashOnChain || proofHashOnChain === ZERO_HASH) return
+      const event = parseAbiItem('event ProofSubmitted(uint256 indexed jobId, bytes32 proofHash)')
+      try {
+        let logs
+        try {
+          logs = await publicClient.getLogs({ address: ARKROW_ADDRESS, event, args: { jobId }, fromBlock: 0n, toBlock: 'latest' })
+        } catch {
+          const latest = await publicClient.getBlockNumber()
+          logs = await publicClient.getLogs({ address: ARKROW_ADDRESS, event, args: { jobId }, fromBlock: latest > 200000n ? latest - 200000n : 0n, toBlock: 'latest' })
+        }
+        const last = logs[logs.length - 1]
+        if (!last) return
+        const tx = await publicClient.getTransaction({ hash: last.transactionHash })
+        // selector (4 bytes) + jobId (32) + proofHash (32) = 68 bytes = 136 hex chars after 0x
+        const extra = tx.input.slice(2 + 136)
+        if (!extra) return
+        const text = hexToString(('0x' + extra) as `0x${string}`)
+        if (keccak256(toBytes(text)) !== proofHashOnChain) return
+        if (!cancelled) setProofContent(text)
+      } catch {
+        /* proof text unavailable; the manual check box still works */
+      }
+    }
+    void load()
+    return () => { cancelled = true }
+  }, [publicClient, proofHashOnChain, jobId])
 
   function refetchAndNotify() {
     void refetch()
@@ -46,7 +83,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
 
   type CallFn = 'approve' | 'dispute' | 'refund' | 'release' | 'expireDispute' | 'submitProof'
 
-  function call(functionName: CallFn, args: readonly [bigint] | readonly [bigint, `0x${string}`]) {
+  function call(functionName: CallFn, args: readonly [bigint] | readonly [bigint, `0x${string}`], dataSuffix?: `0x${string}`) {
     setActionError('')
     writeContract({
       address: ARKROW_ADDRESS,
@@ -54,6 +91,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
       functionName,
       args,
       chainId: ARKROW_CHAIN_ID,
+      ...(dataSuffix ? { dataSuffix } : {}),
     }, {
       onSuccess() { refetchAndNotify() },
       onError(e) { setActionError(e.message) },
@@ -62,8 +100,11 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
 
   function submitProof() {
     if (!proofText.trim()) { setActionError('Paste a proof string or URL.'); return }
-    const proofHash32 = keccak256(toBytes(proofText.trim()))
-    call('submitProof', [jobId, proofHash32] as const)
+    const text = proofText.trim()
+    if (text.length > 500) { setActionError('Proof is too long. Keep it under 500 characters (a link is best).'); return }
+    const proofHash32 = keccak256(toBytes(text))
+    // The text rides along in the transaction so the buyer can read it in the app.
+    call('submitProof', [jobId, proofHash32] as const, toHex(text))
   }
 
   if (!job) {
@@ -170,8 +211,16 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
               <div className="font-mono text-[11px] break-all" style={{ color: 'var(--amber)' }}>
                 {job.proofHash}
               </div>
+              {proofContent ? (
+                <div className="mt-2 rounded-lg px-3 py-2" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                  <div className="text-[11px] mb-1" style={{ color: 'var(--muted)' }}>Proof from the worker</div>
+                  <ProofView text={proofContent} />
+                  <div className="text-[11px] mt-1.5 font-medium" style={{ color: 'var(--green)' }}>✓ Verified. This text matches the fingerprint stored on-chain.</div>
+                </div>
+              ) : (
+              <>
               <div className="text-[11px] mt-2" style={{ color: 'var(--muted)' }}>
-                Arkrow stores only a fingerprint of the proof, not the link itself. The worker sends you the link or text directly (chat, email). Paste it below to confirm it is the exact one they submitted.
+                The proof text could not be loaded automatically. Ask the worker for the link or text and paste it below to confirm it is the exact one they submitted.
               </div>
               <input
                 type="text"
@@ -185,6 +234,8 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
                 keccak256(toBytes(checkText.trim())) === job.proofHash
                   ? <div className="text-[11px] mt-1.5 font-medium" style={{ color: 'var(--green)' }}>✓ Match — this is the proof the worker submitted.</div>
                   : <div className="text-[11px] mt-1.5 font-medium" style={{ color: 'var(--rose)' }}>✗ No match — this is not what the worker submitted. Check for extra spaces or a different link.</div>
+              )}
+              </>
               )}
             </div>
           )}
@@ -235,7 +286,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
           {canSubmit && (
             <div className="flex flex-col gap-2">
               <label className="text-[11px] font-medium" style={{ color: 'var(--ink-2)' }}>
-                Submit proof (URL or any text). Only its fingerprint is stored on-chain, so also send the same link or text to the buyer.
+                Submit proof (a link or short text). The buyer will see it in their dashboard. It is public on-chain, so never paste secrets.
               </label>
               <input
                 type="text"
@@ -425,4 +476,20 @@ function parseErr(msg?: string): string {
   if (m.includes('disputenotexpired'))   return 'Dispute expiry has not passed yet.'
   if (m.includes('disputealreadyexpired')) return 'Dispute has already expired.'
   return 'Transaction failed. Try again.'
+}
+
+
+function ProofView({ text }: { text: string }) {
+  let href: string | null = null
+  try {
+    const u = new URL(text)
+    if (u.protocol === 'http:' || u.protocol === 'https:') href = u.toString()
+  } catch { /* not a link */ }
+  return href ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-xs underline break-all" style={{ color: 'var(--ink)' }}>
+      {text}
+    </a>
+  ) : (
+    <div className="text-xs break-words whitespace-pre-wrap" style={{ color: 'var(--ink)' }}>{text}</div>
+  )
 }
