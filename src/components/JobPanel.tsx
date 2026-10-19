@@ -36,6 +36,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
 
   const [proofText, setProofText]   = useState('')
+  const [checkText, setCheckText]   = useState('')
   const [actionError, setActionError] = useState('')
 
   function refetchAndNotify() {
@@ -169,13 +170,29 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
               <div className="font-mono text-[11px] break-all" style={{ color: 'var(--amber)' }}>
                 {job.proofHash}
               </div>
+              <div className="text-[11px] mt-2" style={{ color: 'var(--muted)' }}>
+                Arkrow stores only a fingerprint of the proof, not the link itself. The worker sends you the link or text directly (chat, email). Paste it below to confirm it is the exact one they submitted.
+              </div>
+              <input
+                type="text"
+                value={checkText}
+                onChange={e => setCheckText(e.target.value)}
+                placeholder="Paste the proof the worker sent you"
+                className="w-full text-xs px-3 py-2 rounded-lg outline-none mt-2"
+                style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)', color: 'var(--ink)' }}
+              />
+              {checkText.trim() && (
+                keccak256(toBytes(checkText.trim())) === job.proofHash
+                  ? <div className="text-[11px] mt-1.5 font-medium" style={{ color: 'var(--green)' }}>✓ Match — this is the proof the worker submitted.</div>
+                  : <div className="text-[11px] mt-1.5 font-medium" style={{ color: 'var(--rose)' }}>✗ No match — this is not what the worker submitted. Check for extra spaces or a different link.</div>
+              )}
             </div>
           )}
 
           {/* Notices */}
           {reviewOpen && (
             <Notice color="amber">
-              Review open until {new Date(reviewDeadline * 1000).toLocaleString()}. Approve or dispute.
+              Review open until {new Date(reviewDeadline * 1000).toLocaleString()}. Buyer: approve or dispute before then. After that, anyone can release the payment to the worker.
             </Notice>
           )}
           {reviewExpired && (
@@ -218,7 +235,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
           {canSubmit && (
             <div className="flex flex-col gap-2">
               <label className="text-[11px] font-medium" style={{ color: 'var(--ink-2)' }}>
-                Submit proof (URL or any string — hashed on-chain)
+                Submit proof (URL or any text). Only its fingerprint is stored on-chain, so also send the same link or text to the buyer.
               </label>
               <input
                 type="text"
