@@ -26,13 +26,14 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
   function validate(): string | null {
     if (!isAddress(worker)) return 'Worker address is not valid.'
     const days = parseFloat(deadlineDays)
-    if (isNaN(days) || days <= 0) return 'Deadline must be a positive number of days.'
+    if (isNaN(days) || days < 1) return 'Deadline must be at least 1 day.'
     const amt = parseFloat(amount)
     if (isNaN(amt) || amt <= 0) return 'Amount must be greater than 0.'
+    if (amt > MAX_JOB_USDC) return `Launch limit: ${MAX_JOB_USDC} USDC per job while Arkrow is new.`
     if (referrerBps && !referrer) return 'Referrer address is required when a share is set.'
     if (referrer && !isAddress(referrer)) return 'Referrer address is not valid.'
-    const bps = referrerBps ? parseInt(referrerBps, 10) : 0
-    if (bps > 1000) return 'Referrer share cannot exceed 10% (1000 bps).'
+    const pct = referrerBps ? parseFloat(referrerBps) : 0
+    if (isNaN(pct) || pct < 0 || pct > 10) return 'Referrer share must be between 0 and 10%.'
     if (worker.toLowerCase() === address?.toLowerCase()) return 'Worker cannot be your own address.'
     return null
   }
@@ -268,6 +269,8 @@ const inputStyle: React.CSSProperties = {
   color: 'var(--ink)',
 }
 
+const MAX_JOB_USDC = 100
+
 function parseContractError(msg?: string): string {
   if (!msg) return 'Transaction failed.'
   if (msg.includes('user rejected') || msg.includes('User rejected')) return 'Transaction cancelled.'
@@ -276,5 +279,9 @@ function parseContractError(msg?: string): string {
   if (msg.includes('DeadlineInPast')) return 'Deadline must be in the future.'
   if (msg.includes('ReferrerBpsTooHigh')) return 'Referrer share cannot exceed 10%.'
   if (msg.includes('ZeroAmount'))    return 'Amount must be greater than zero.'
+  if (msg.includes('ContractPaused')) return 'New jobs are paused for a moment. Your existing jobs are safe and can still be finished.'
+  if (msg.includes('SelfJob'))        return 'Worker cannot be your own address.'
+  if (msg.includes('DeadlineTooSoon')) return 'Deadline is too soon. Choose at least 1 day.'
+  if (msg.includes('AmountTooHigh'))  return 'Amount is above the launch limit per job.'
   return 'Transaction failed. Check your inputs and try again.'
 }
