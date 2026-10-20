@@ -5,7 +5,11 @@
 
 export const ARKROW_ADDRESS = '0x44e6aab4a0850b7cbe8c1502ffbabff9dc46ee7c' as const
 
-export const ARKROW_CHAIN_ID = 5042002 // Arc Testnet
+export const ARKROW_CHAIN_ID: number = 5042002 // Arc Testnet (mainnet = 5042)
+
+export const IS_MAINNET = ARKROW_CHAIN_ID === 5042
+export const NETWORK_NAME = IS_MAINNET ? 'Arc Mainnet' : 'Arc Testnet'
+const EXPLORER_BASE = IS_MAINNET ? 'https://explorer.arc.io' : 'https://explorer.testnet.arc.io'
 
 export const REVIEW_WINDOW_SECS = 3 * 24 * 60 * 60   // 3 days
 export const DISPUTE_EXPIRY_SECS = 14 * 24 * 60 * 60  // 14 days
@@ -80,6 +84,11 @@ export const ARKROW_ABI = [
     "type": "function", "name": "pendingWithdrawals",
     "inputs": [{ "name": "", "type": "address" }],
     "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function", "name": "feeBps",
+    "inputs": [], "outputs": [{ "name": "", "type": "uint256" }],
     "stateMutability": "view"
   },
   {
@@ -267,9 +276,9 @@ export function shortenAddr(addr: string): string {
 }
 
 export function buildExplorerTx(tx: string): string {
-  return `https://explorer.testnet.arc.io/tx/${tx}`
+  return `${EXPLORER_BASE}/tx/${tx}`
 }
 
 export function buildExplorerAddr(addr: string): string {
-  return `https://explorer.testnet.arc.io/address/${addr}`
+  return `${EXPLORER_BASE}/address/${addr}`
 }
