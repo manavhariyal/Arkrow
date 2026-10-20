@@ -67,7 +67,7 @@ function AppPage() {
 
       {/* Subtle footer rule */}
       <footer
-        className="border-t px-4 sm:px-6 py-4 text-center text-[11px]"
+        className="border-t px-4 sm:px-6 py-4 text-center text-[13px]"
         style={{ borderColor: 'var(--border)', color: 'var(--muted)' }}
       >
         {IS_MAINNET
