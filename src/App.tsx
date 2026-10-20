@@ -8,6 +8,8 @@
  */
 import { useEffect, useState } from 'react'
 import { Topbar }       from './components/Topbar'
+import { StatusBanner } from './components/StatusBanner'
+import { IS_MAINNET }   from './arkrow'
 import { Hero }         from './components/Hero'
 import { PostJob }      from './components/PostJob'
 import { ActivityFeed } from './components/ActivityFeed'
@@ -28,6 +30,7 @@ function AppPage() {
   return (
     <div className="min-h-dvh" style={{ background: 'var(--bg)' }}>
       <Topbar />
+      <StatusBanner />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
         <Hero />
@@ -60,7 +63,9 @@ function AppPage() {
         className="border-t px-4 sm:px-6 py-4 text-center text-[11px]"
         style={{ borderColor: 'var(--border)', color: 'var(--muted)' }}
       >
-        Arkrow is unaudited and on testnet. Do not use with real funds.
+        {IS_MAINNET
+          ? 'Arkrow is unaudited. Use small amounts and double-check every address.'
+          : 'Arkrow is unaudited and on testnet. Do not use with real funds.'}
       </footer>
     </div>
   )
