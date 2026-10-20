@@ -17,7 +17,10 @@ import { JobsTable }    from './components/JobsTable'
 import { AgentCard }    from './components/AgentCard'
 import { BuilderCard }  from './components/BuilderCard'
 import { TryIt }        from './components/TryIt'
+import { ActionInbox }   from './components/ActionInbox'
 import Landing          from './pages/Landing'
+import Receipt          from './pages/Receipt'
+import { parseJobParam } from './links'
 
 function AppPage() {
   // Incrementing this key triggers re-reads across the jobs table
@@ -34,6 +37,7 @@ function AppPage() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
         <Hero />
+        <ActionInbox />
 
         {/* Three-column grid on large screens, single column on mobile.
             Left col (1/3): Post a job + Agent card + Activity feed
@@ -71,15 +75,23 @@ function AppPage() {
   )
 }
 
-/** Picks the page from the address bar: "#/app" is the app, anything else is the landing page. */
+type Route = 'app' | 'receipt' | 'landing'
+
+function routeOf(hash: string): Route {
+  if (hash.startsWith('#/receipt/')) return 'receipt'
+  if (hash.startsWith('#/app')) return 'app'
+  return 'landing'
+}
+
+/** Picks the page from the address bar: "#/app" is the app, "#/receipt/7" a receipt, anything else the landing page. */
 export default function App() {
-  const [isApp, setIsApp] = useState(() => window.location.hash.startsWith('#/app'))
+  const [hash, setHash] = useState(() => window.location.hash)
 
   useEffect(() => {
     const onHash = () => {
-      const next = window.location.hash.startsWith('#/app')
-      setIsApp(prev => {
-        if (prev !== next) window.scrollTo(0, 0)
+      setHash(prev => {
+        const next = window.location.hash
+        if (routeOf(prev) !== routeOf(next)) window.scrollTo(0, 0)
         return next
       })
     }
@@ -87,5 +99,10 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
-  return isApp ? <AppPage /> : <Landing />
+  const route = routeOf(hash)
+  if (route === 'receipt') {
+    const id = parseJobParam(hash.slice('#/receipt/'.length).split('?')[0])
+    return id ? <Receipt jobId={id} /> : <Landing />
+  }
+  return route === 'app' ? <AppPage /> : <Landing />
 }
