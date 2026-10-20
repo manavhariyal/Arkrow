@@ -25,7 +25,7 @@ export const config = createConfig({
     injected(),
     coinbaseWallet({ appName: 'Arkrow' }),
     ...(wcProjectId
-      ? [walletConnect({ projectId: wcProjectId, metadata: {
+      ? [walletConnect({ projectId: wcProjectId, showQrModal: false, metadata: {
           name: 'Arkrow',
           description: 'Escrow for AI agents on Arc',
           url: 'https://arkrow.vercel.app',
