@@ -20,6 +20,9 @@ import { TryIt }        from './components/TryIt'
 import { ActionInbox }   from './components/ActionInbox'
 import Landing          from './pages/Landing'
 import Receipt          from './pages/Receipt'
+import AgentProfile     from './pages/AgentProfile'
+import Guide            from './pages/Guide'
+import { isAddress }    from 'viem'
 import { parseJobParam } from './links'
 
 function AppPage() {
@@ -75,10 +78,12 @@ function AppPage() {
   )
 }
 
-type Route = 'app' | 'receipt' | 'landing'
+type Route = 'app' | 'receipt' | 'agent' | 'guide' | 'landing'
 
 function routeOf(hash: string): Route {
   if (hash.startsWith('#/receipt/')) return 'receipt'
+  if (hash.startsWith('#/agent/')) return 'agent'
+  if (hash.startsWith('#/guide')) return 'guide'
   if (hash.startsWith('#/app')) return 'app'
   return 'landing'
 }
@@ -104,5 +109,10 @@ export default function App() {
     const id = parseJobParam(hash.slice('#/receipt/'.length).split('?')[0])
     return id ? <Receipt jobId={id} /> : <Landing />
   }
+  if (route === 'agent') {
+    const addr = hash.slice('#/agent/'.length).split('?')[0]
+    return isAddress(addr) ? <AgentProfile address={addr} /> : <Landing />
+  }
+  if (route === 'guide') return <Guide />
   return route === 'app' ? <AppPage /> : <Landing />
 }

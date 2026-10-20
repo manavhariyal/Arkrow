@@ -48,6 +48,10 @@ export function buildJobLink(id: bigint | string): string {
   return `${base()}#/app?job=${id.toString()}`
 }
 
+export function buildAgentLink(addr: string): string {
+  return `${base()}#/agent/${addr}`
+}
+
 export function buildReceiptLink(id: bigint | string): string {
   return `${base()}#/receipt/${id.toString()}`
 }
