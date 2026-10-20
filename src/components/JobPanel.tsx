@@ -4,14 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { keccak256, toBytes } from 'viem'
 import {
   ARKROW_ADDRESS, ARKROW_ABI, ARKROW_CHAIN_ID,
-  formatNativeUsdc, shortenAddr, buildExplorerTx,
+  formatNativeUsdc, shortenAddr, buildExplorerTx, NETWORK_NAME,
   JobStatus,
 } from '../arkrow'
+import { useNow, formatDuration } from '../protocol'
+import { ConfirmDialog } from './ConfirmDialog'
 import { StatusBadge } from './StatusBadge'
 
-// Snapshot at module load — stable for the session, avoids impure-in-render lint
 const ZERO_HASH = `0x${'0'.repeat(64)}`
-const NOW_SECS = Math.floor(Date.now() / 1000)
 
 interface Props {
   jobId: bigint
@@ -38,6 +38,8 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
 
   const [proofText, setProofText]   = useState('')
   const [checkText, setCheckText]   = useState('')
+  const [confirm, setConfirm]       = useState<null | 'approve' | 'dispute' | 'refund'>(null)
+  const now = useNow()
   const [actionError, setActionError] = useState('')
 
   // Proof text the worker attached (stored in the contract, read with a plain call).
@@ -90,7 +92,6 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
     )
   }
 
-  const now    = NOW_SECS
   const st     = job.status as JobStatus
 
   const isBuyer  = address?.toLowerCase() === job.buyer.toLowerCase()
@@ -104,10 +105,12 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
   const disputeDeadline  = Number(job.disputeTime) + 14 * 24 * 3600
   const disputeCanExpire = st === JobStatus.DISPUTED && now >= disputeDeadline
 
-  const canRelease       = isBuyer  && st === JobStatus.OPEN            && now >= Number(job.deadline)
+  const deadlineSecs     = Number(job.deadline)
+  const noProofYet       = st === JobStatus.OPEN
   const canApprove       = isBuyer  && reviewOpen
   const canDispute       = isBuyer  && reviewOpen
-  const canRefund        = isBuyer  && st === JobStatus.OPEN            && now < Number(job.deadline)
+  // The contract only allows a refund AFTER the deadline, when no proof was submitted.
+  const canRefund        = isBuyer  && noProofYet && now > deadlineSecs
   const canSubmit        = isWorker && st === JobStatus.OPEN            && now < Number(job.deadline)
   const canExpireDispute = disputeCanExpire
 
@@ -115,7 +118,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
   const workerNet = job.amount - workerFee
 
   const ZERO_ADDR  = '0x0000000000000000000000000000000000000000'
-  const ZERO_BYTES = '0x0000000000000000000000000000000000000000000000000000000000000000'
+  const ZERO_BYTES = ZERO_HASH
 
   return (
     <AnimatePresence>
@@ -212,20 +215,43 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
             </div>
           )}
 
-          {/* Notices */}
+          {/* Notices with live countdowns */}
+          {noProofYet && now <= deadlineSecs && (isBuyer || isWorker) && (
+            <Notice color="amber">
+              {isWorker
+                ? `You have ${formatDuration(deadlineSecs - now)} left to submit proof (deadline ${new Date(deadlineSecs * 1000).toLocaleString()}).`
+                : `Waiting for the worker. They have ${formatDuration(deadlineSecs - now)} left to submit proof. If they do not, you can claim a full refund after ${new Date(deadlineSecs * 1000).toLocaleString()}.`}
+            </Notice>
+          )}
+          {noProofYet && now > deadlineSecs && isBuyer && (
+            <Notice color="green">
+              The deadline passed and no proof was submitted. You can claim a full refund.
+            </Notice>
+          )}
+          {noProofYet && now > deadlineSecs && !isBuyer && (
+            <Notice color="rose">
+              The deadline passed and no proof was submitted. The buyer can claim a refund.
+            </Notice>
+          )}
           {reviewOpen && (
             <Notice color="amber">
-              Review open until {new Date(reviewDeadline * 1000).toLocaleString()}. Buyer: approve or dispute before then. After that, anyone can release the payment to the worker.
+              Review window: {formatDuration(reviewDeadline - now)} left (ends {new Date(reviewDeadline * 1000).toLocaleString()}).
+              {' '}Buyer: approve or dispute before then. After that, anyone can release the payment to the worker.
             </Notice>
           )}
           {reviewExpired && (
             <Notice color="green">
-              Review window has passed. Anyone can release payment to the worker.
+              The review window has ended. Anyone can now release the payment to the worker.
+            </Notice>
+          )}
+          {st === JobStatus.DISPUTED && !disputeCanExpire && (
+            <Notice color="rose">
+              Dispute open. The owner can resolve it. If nobody resolves it, the buyer can reclaim the funds in {formatDuration(disputeDeadline - now)}.
             </Notice>
           )}
           {disputeCanExpire && (
             <Notice color="rose">
-              Dispute expired (14 days). Buyer can reclaim funds.
+              The dispute window (14 days) has ended. The buyer's funds can now be returned.
             </Notice>
           )}
 
@@ -284,7 +310,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
           {canApprove && (
             <ActionBtn
               label="Approve & release payment" variant="green"
-              onClick={() => call('approve', [jobId] as const)}
+              onClick={() => setConfirm('approve')}
               busy={isBusy} onWrongChain={onWrongChain}
               onSwitch={() => switchChain({ chainId: ARKROW_CHAIN_ID })}
             />
@@ -294,7 +320,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
           {canDispute && (
             <ActionBtn
               label="Raise dispute" variant="rose"
-              onClick={() => call('dispute', [jobId] as const)}
+              onClick={() => setConfirm('dispute')}
               busy={isBusy} onWrongChain={onWrongChain}
               onSwitch={() => switchChain({ chainId: ARKROW_CHAIN_ID })}
             />
@@ -310,21 +336,11 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
             />
           )}
 
-          {/* Buyer: refund */}
+          {/* Buyer: refund (only after the deadline, when no proof was submitted) */}
           {canRefund && (
             <ActionBtn
-              label="Cancel & refund" variant="neutral"
-              onClick={() => call('refund', [jobId] as const)}
-              busy={isBusy} onWrongChain={onWrongChain}
-              onSwitch={() => switchChain({ chainId: ARKROW_CHAIN_ID })}
-            />
-          )}
-
-          {/* Buyer: release (deadline passed, no proof) */}
-          {canRelease && (
-            <ActionBtn
-              label="Release (deadline passed)" variant="green"
-              onClick={() => call('release', [jobId] as const)}
+              label="Claim refund (deadline passed)" variant="green"
+              onClick={() => setConfirm('refund')}
               busy={isBusy} onWrongChain={onWrongChain}
               onSwitch={() => switchChain({ chainId: ARKROW_CHAIN_ID })}
             />
@@ -340,6 +356,42 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
             />
           )}
         </div>
+
+        <ConfirmDialog
+          open={confirm === 'approve'}
+          title="Approve and pay the worker?"
+          rows={[
+            { label: 'Worker receives', value: `${formatNativeUsdc(workerNet, 4)} USDC` },
+            { label: 'Arkrow fee', value: `${formatNativeUsdc(workerFee, 4)} USDC` },
+            { label: 'Worker address', value: job.worker, mono: true },
+          ]}
+          warning="This pays the worker now and cannot be undone. Only approve after you have checked the proof."
+          confirmLabel="Approve & pay"
+          onConfirm={() => { setConfirm(null); call('approve', [jobId] as const) }}
+          onCancel={() => setConfirm(null)}
+        />
+        <ConfirmDialog
+          open={confirm === 'dispute'}
+          title="Raise a dispute?"
+          rows={[
+            { label: 'Amount in escrow', value: `${formatNativeUsdc(job.amount, 4)} USDC` },
+            { label: 'Worker address', value: job.worker, mono: true },
+          ]}
+          warning="The funds stay locked while the owner reviews the case. If nobody resolves it within 14 days, you can reclaim them."
+          confirmLabel="Raise dispute"
+          danger
+          onConfirm={() => { setConfirm(null); call('dispute', [jobId] as const) }}
+          onCancel={() => setConfirm(null)}
+        />
+        <ConfirmDialog
+          open={confirm === 'refund'}
+          title="Claim your refund?"
+          rows={[{ label: 'You get back', value: `${formatNativeUsdc(job.amount, 4)} USDC` }]}
+          warning="This closes the job. The worker will not be paid."
+          confirmLabel="Claim refund"
+          onConfirm={() => { setConfirm(null); call('refund', [jobId] as const) }}
+          onCancel={() => setConfirm(null)}
+        />
       </motion.div>
     </AnimatePresence>
   )
@@ -403,7 +455,7 @@ function ActionBtn({ label, variant, onClick, busy, onWrongChain, onSwitch }: {
         className="w-full py-2.5 rounded-lg text-xs font-medium transition-all"
         style={{ background: 'var(--rose-light)', color: 'var(--rose)', border: '1px solid var(--rose-border)' }}
       >
-        Switch to Arc Testnet
+        Switch to {NETWORK_NAME}
       </button>
     )
   }

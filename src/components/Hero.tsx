@@ -1,6 +1,6 @@
 import { useReadContract } from 'wagmi'
 import { motion } from 'framer-motion'
-import { ARKROW_ADDRESS, ARKROW_ABI, ARKROW_CHAIN_ID, formatNativeUsdc } from '../arkrow'
+import { ARKROW_ADDRESS, ARKROW_ABI, ARKROW_CHAIN_ID, formatNativeUsdc, NETWORK_NAME, IS_MAINNET } from '../arkrow'
 
 export function Hero() {
   const { data: jobCounter } = useReadContract({
@@ -27,7 +27,7 @@ export function Hero() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1.0] }}
-      className="pt-28 pb-10 relative z-10"
+      className="pt-8 pb-10 relative z-10"
     >
       <MoneyCard />
 
@@ -40,7 +40,7 @@ export function Hero() {
         }}
       >
         <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--coral)' }} />
-        Live on Arc Testnet
+        Live on {NETWORK_NAME}
       </p>
 
       <h1
@@ -70,7 +70,7 @@ export function Hero() {
         className="mt-5 text-[11px]"
         style={{ color: 'var(--muted)' }}
       >
-        Unaudited testnet app. Use small amounts only.
+        {IS_MAINNET ? 'Unaudited app. Use small amounts only.' : 'Unaudited testnet app. Use small amounts only.'}
       </p>
     </motion.section>
   )

@@ -1,12 +1,17 @@
 import { useState } from 'react'
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi'
+import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi'
 import { ConnectKitButton } from 'connectkit'
 import { motion } from 'framer-motion'
 import { isAddress } from 'viem'
 import {
   ARKROW_ADDRESS, ARKROW_ABI, ARKROW_CHAIN_ID,
-  parseNativeUsdc, buildExplorerTx,
+  parseNativeUsdc, formatNativeUsdc, buildExplorerTx, NETWORK_NAME,
 } from '../arkrow'
+import { useProtocolInfo } from '../protocol'
+import { ConfirmDialog } from './ConfirmDialog'
+
+// Kept aside for the network fee so a job never uses the very last of the wallet's USDC.
+const GAS_RESERVE = 20_000_000_000_000_000n // 0.02 USDC
 
 export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
   const { isConnected, chainId, address } = useAccount()
@@ -19,6 +24,13 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
   const [referrerBps, setReferrerBps]   = useState('')
   const [amount, setAmount]             = useState('')
   const [formError, setFormError]       = useState('')
+  const [confirmOpen, setConfirmOpen]   = useState(false)
+
+  const info = useProtocolInfo()
+  const { data: balance } = useBalance({
+    address, chainId: ARKROW_CHAIN_ID,
+    query: { enabled: !!address, refetchInterval: 15_000 },
+  })
 
   const { writeContract, data: hash, isPending, isError, error, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
@@ -27,9 +39,14 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
     if (!isAddress(worker)) return 'Worker address is not valid.'
     const days = parseFloat(deadlineDays)
     if (isNaN(days) || days < 1) return 'Deadline must be at least 1 day.'
+    if (info.paused) return 'New jobs are paused for now. Please try again later.'
+    if (!/^\d+(\.\d{1,18})?$/.test(amount.trim())) return 'Enter the amount as a plain number, like 1.50.'
     const amt = parseFloat(amount)
     if (isNaN(amt) || amt <= 0) return 'Amount must be greater than 0.'
-    if (amt > MAX_JOB_USDC) return `Launch limit: ${MAX_JOB_USDC} USDC per job while Arkrow is new.`
+    if (amt > info.maxJobUsdc) return `Launch limit: ${info.maxJobUsdc} USDC per job while Arkrow is new.`
+    if (balance && parseNativeUsdc(amount.trim()) + GAS_RESERVE > balance.value) {
+      return `Not enough USDC. You have ${formatNativeUsdc(balance.value, 4)}, and this job needs about ${formatNativeUsdc(parseNativeUsdc(amount.trim()) + GAS_RESERVE, 4)} (amount plus network fee).`
+    }
     if (referrerBps && !referrer) return 'Referrer address is required when a share is set.'
     if (referrer && !isAddress(referrer)) return 'Referrer address is not valid.'
     const pct = referrerBps ? parseFloat(referrerBps) : 0
@@ -43,9 +60,13 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
     setFormError('')
     const err = validate()
     if (err) { setFormError(err); return }
+    setConfirmOpen(true)
+  }
 
+  function postJob() {
+    setConfirmOpen(false)
     const deadlineTs = BigInt(Math.floor(Date.now() / 1000) + Math.floor(parseFloat(deadlineDays) * 86400))
-    const amountRaw  = parseNativeUsdc(amount)
+    const amountRaw  = parseNativeUsdc(amount.trim())
     const bps        = referrerBps ? BigInt(Math.round(parseFloat(referrerBps) * 100)) : 0n
     const ref        = (referrer && isAddress(referrer)) ? referrer : '0x0000000000000000000000000000000000000000'
 
@@ -106,6 +127,14 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
   }
 
   const isBusy = isPending || isConfirming || isSwitching
+
+  const summaryAmount = /^\d+(\.\d{1,18})?$/.test(amount.trim()) ? parseNativeUsdc(amount.trim()) : 0n
+  const summaryFee    = info.feeBps !== null ? (summaryAmount * BigInt(info.feeBps)) / 10000n : null
+  const refBpsNum     = referrerBps ? Math.round(parseFloat(referrerBps) * 100) : 0
+  const summaryRef    = referrer && refBpsNum > 0 ? (summaryAmount * BigInt(refBpsNum)) / 10000n : 0n
+  const summaryWorker = summaryFee !== null ? summaryAmount - summaryFee - summaryRef : null
+  const daysNum       = parseFloat(deadlineDays)
+  const summaryDate   = !isNaN(daysNum) ? new Date(Date.now() + daysNum * 86_400_000).toLocaleString() : ''
 
   return (
     <motion.div
@@ -194,6 +223,12 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
           </div>
         </details>
 
+        <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
+          {balance ? `Balance: ${formatNativeUsdc(balance.value, 2)} USDC · ` : ''}
+          Limit: {info.maxJobUsdc} USDC per job
+          {info.feePct !== null ? ` · Fee: ${info.feePct}% (only when the job is paid)` : ''}
+        </p>
+
         {formError && (
           <p className="text-xs rounded-lg px-3 py-2"
             style={{ background: 'var(--rose-light)', color: 'var(--rose)', border: '1px solid var(--rose-border)' }}>
@@ -229,7 +264,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
             className="w-full py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-80"
             style={{ background: 'var(--rose-light)', color: 'var(--rose)', border: '1px solid var(--rose-border)' }}
           >
-            {isSwitching ? 'Switching…' : 'Switch to Arc Testnet'}
+            {isSwitching ? 'Switching…' : `Switch to ${NETWORK_NAME}`}
           </button>
         ) : (
           <button
@@ -247,6 +282,27 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
           </button>
         )}
       </form>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Check before you lock funds"
+        rows={[
+          { label: 'You lock', value: `${amount.trim() || '0'} USDC` },
+          { label: 'Worker address', value: worker, mono: true },
+          { label: 'Deadline', value: summaryDate },
+          ...(summaryFee !== null && summaryWorker !== null
+            ? [
+                { label: 'Worker receives', value: `${formatNativeUsdc(summaryWorker, 4)} USDC` },
+                { label: `Arkrow fee (${info.feePct}%)`, value: `${formatNativeUsdc(summaryFee, 4)} USDC` },
+              ]
+            : []),
+          ...(summaryRef > 0n ? [{ label: 'Referrer receives', value: `${formatNativeUsdc(summaryRef, 4)} USDC` }] : []),
+        ]}
+        warning="Your USDC is locked until you approve the work, the deadline passes with no proof (then you can claim a refund), or a dispute ends. The worker address cannot be changed afterwards, so check every character."
+        confirmLabel="Lock USDC & post job"
+        onConfirm={postJob}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </motion.div>
   )
 }
@@ -268,8 +324,6 @@ const inputStyle: React.CSSProperties = {
   border: '1px solid var(--border)',
   color: 'var(--ink)',
 }
-
-const MAX_JOB_USDC = 100
 
 function parseContractError(msg?: string): string {
   if (!msg) return 'Transaction failed.'

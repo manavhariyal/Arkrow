@@ -2,7 +2,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { motion } from 'framer-motion'
 import {
   ARKROW_ADDRESS, ARKROW_ABI, ARKROW_CHAIN_ID,
-  formatNativeUsdc, shortenAddr, buildExplorerTx,
+  formatNativeUsdc, shortenAddr, buildExplorerTx, NETWORK_NAME,
 } from '../arkrow'
 
 export function AgentCard() {
@@ -150,7 +150,7 @@ export function AgentCard() {
           className="text-[11px] text-center transition-all hover:underline"
           style={{ color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}
         >
-          Make sure you are on Arc Testnet
+          Make sure you are on {NETWORK_NAME}
         </button>
       </div>
     </motion.div>

@@ -1,6 +1,6 @@
 import { ConnectKitButton } from 'connectkit'
 import { useAccount, useSwitchChain } from 'wagmi'
-import { ARKROW_CHAIN_ID } from '../arkrow'
+import { ARKROW_CHAIN_ID, NETWORK_NAME } from '../arkrow'
 import { ArkMark } from './ArkMark'
 
 export function Topbar() {
@@ -41,7 +41,7 @@ export function Topbar() {
           }}
         >
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--coral)' }} />
-          Arc Testnet
+          {NETWORK_NAME}
         </span>
 
         {/* Wrong chain warning */}
