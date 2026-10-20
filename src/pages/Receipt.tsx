@@ -4,7 +4,7 @@ import { keccak256, toBytes } from 'viem'
 import { payoutSplit } from '../jobmath'
 import { buildReceiptLink, copyLink } from '../links'
 import { StatusBadge } from '../components/StatusBadge'
-import { ArkMark } from '../components/ArkMark'
+import { PageHeader } from '../components/PageHeader'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const ZERO_HASH = `0x${'0'.repeat(64)}`
@@ -32,13 +32,7 @@ export default function Receipt({ jobId }: { jobId: bigint }) {
 
   return (
     <div className="min-h-dvh" style={{ background: 'var(--bg)' }}>
-      <header className="max-w-2xl mx-auto px-4 sm:px-6 pt-6 pb-2 flex items-center justify-between">
-        <a href="#/" className="flex items-center gap-2" style={{ color: 'var(--ink)', textDecoration: 'none' }}>
-          <ArkMark size={26} />
-          <span className="font-serif text-xl">Arkrow</span>
-        </a>
-        <a href="#/app" className="text-xs underline" style={{ color: 'var(--ink-2)' }}>Open the app</a>
-      </header>
+      <PageHeader />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 pb-16 pt-4">
         {isLoading && <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading receipt…</p>}
