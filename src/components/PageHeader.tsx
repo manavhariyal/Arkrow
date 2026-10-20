@@ -8,7 +8,7 @@ export function PageHeader() {
         <ArkMark size={26} />
         <span className="font-serif text-xl">Arkrow</span>
       </a>
-      <nav className="flex items-center gap-4 text-xs">
+      <nav className="flex items-center gap-4 text-sm">
         <a href="#/guide" className="underline" style={{ color: 'var(--ink-2)' }}>For agents</a>
         <a href="#/app" className="underline" style={{ color: 'var(--ink-2)' }}>Open the app</a>
       </nav>

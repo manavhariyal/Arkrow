@@ -62,7 +62,7 @@ export function AgentCard() {
         >
           <span style={{ color: 'var(--muted)' }}>◎</span>
         </div>
-        <p className="text-xs" style={{ color: 'var(--muted)' }}>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>
           Connect your wallet to see your agent profile.
         </p>
       </motion.div>
@@ -84,7 +84,7 @@ export function AgentCard() {
         className="px-5 py-4 border-b"
         style={{ borderColor: 'var(--border)', background: 'var(--surface-muted)' }}
       >
-        <div className="text-[11px] mb-1" style={{ color: 'var(--muted)' }}>Your agent profile</div>
+        <div className="text-[13px] mb-1" style={{ color: 'var(--muted)' }}>Your agent profile</div>
         <div className="font-mono text-sm font-medium" style={{ color: 'var(--ink)' }}>
           {address ? shortenAddr(address) : '–'}
         </div>
@@ -99,7 +99,7 @@ export function AgentCard() {
       {/* Pending withdrawals */}
       <div className="p-5 flex flex-col gap-3">
         <div>
-          <div className="text-[11px] mb-1" style={{ color: 'var(--muted)' }}>Pending withdrawals</div>
+          <div className="text-[13px] mb-1" style={{ color: 'var(--muted)' }}>Pending withdrawals</div>
           <div
             className="tabular font-mono text-xl font-medium"
             style={{ color: hasPending ? 'var(--green)' : 'var(--muted)' }}
@@ -107,7 +107,7 @@ export function AgentCard() {
             ${pending ? formatNativeUsdc(pending, 4) : '0.0000'}
           </div>
           {hasPending && (
-            <div className="text-[11px] mt-0.5" style={{ color: 'var(--green)' }}>
+            <div className="text-[13px] mt-0.5" style={{ color: 'var(--green)' }}>
               Ready to withdraw
             </div>
           )}
@@ -118,14 +118,14 @@ export function AgentCard() {
             href={buildExplorerTx(hash)}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs underline"
+            className="text-sm underline"
             style={{ color: 'var(--green)' }}
           >
             Withdrawn — view on explorer
           </a>
         )}
         {isError && (
-          <p className="text-xs rounded-lg px-3 py-2"
+          <p className="text-sm rounded-lg px-3 py-2"
             style={{ background: 'var(--rose-light)', color: 'var(--rose)', border: '1px solid var(--rose-border)' }}>
             {error?.message?.includes('user rejected') ? 'Cancelled.' : 'Withdrawal failed.'}
           </p>
@@ -134,7 +134,7 @@ export function AgentCard() {
         <button
           onClick={hasPending ? withdraw : undefined}
           disabled={!hasPending || isBusy}
-          className="w-full py-2.5 rounded-lg text-xs font-medium transition-all active:scale-[0.98]"
+          className="w-full py-2.5 rounded-lg text-base font-medium transition-all active:scale-[0.98]"
           style={{
             background: hasPending && !isBusy ? 'var(--ink)' : 'var(--surface-muted)',
             border: `1px solid ${hasPending && !isBusy ? 'var(--ink)' : 'var(--border)'}`,
@@ -148,8 +148,8 @@ export function AgentCard() {
         {address && (
           <a
             href={`#/agent/${address}`}
-            className="text-[11px] text-center underline"
-            style={{ color: 'var(--ink-2)' }}
+            className="block text-sm text-center font-medium py-2.5 rounded-lg transition-all hover:opacity-80"
+            style={{ color: 'var(--ink)', border: '1.5px solid var(--ink)', textDecoration: 'none' }}
           >
             View your public profile
           </a>
@@ -157,7 +157,7 @@ export function AgentCard() {
 
         <button
           onClick={() => switchChain({ chainId: ARKROW_CHAIN_ID })}
-          className="text-[11px] text-center transition-all hover:underline"
+          className="text-[13px] text-center transition-all hover:underline"
           style={{ color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}
         >
           Make sure you are on {NETWORK_NAME}
@@ -171,7 +171,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="px-5 py-3" style={{ borderColor: 'var(--border)' }}>
       <div className="font-mono tabular text-base font-semibold" style={{ color: 'var(--ink)' }}>{value}</div>
-      <div className="text-[11px] mt-0.5" style={{ color: 'var(--muted)' }}>{label}</div>
+      <div className="text-[13px] mt-0.5" style={{ color: 'var(--muted)' }}>{label}</div>
     </div>
   )
 }

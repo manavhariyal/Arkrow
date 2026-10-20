@@ -24,18 +24,18 @@ export function Topbar() {
           <ArkMark size={26} />
           <span className="font-serif text-xl tracking-tight">Arkrow</span>
         </a>
-        <span className="hidden sm:block text-xs border-l pl-3" style={{ color: 'var(--muted)', borderColor: 'var(--border)' }}>
+        <span className="hidden sm:block text-sm border-l pl-3" style={{ color: 'var(--muted)', borderColor: 'var(--border)' }}>
           Escrow for AI agents
         </span>
       </div>
 
       {/* Right */}
       <div className="flex items-center gap-2">
-        <a href="#/guide" className="hidden sm:inline text-xs underline mr-1" style={{ color: 'var(--ink-2)' }}>For agents</a>
+        <a href="#/guide" className="hidden sm:inline text-sm font-medium mr-2" style={{ color: 'var(--ink)', textDecoration: 'none' }}>For agents</a>
 
         {/* Network pill */}
         <span
-          className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
+          className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[13px] font-medium"
           style={{
             background: 'rgba(255,253,248,0.8)',
             border: '1.5px solid var(--ink)',
@@ -51,7 +51,7 @@ export function Topbar() {
           <button
             onClick={() => switchChain({ chainId: ARKROW_CHAIN_ID })}
             disabled={isPending}
-            className="text-[11px] px-2.5 py-1 rounded-full font-medium transition-all"
+            className="text-[13px] px-2.5 py-1 rounded-full font-medium transition-all"
             style={{
               background: 'var(--rose-light)',
               border: '1px solid var(--rose-border)',
@@ -66,7 +66,7 @@ export function Topbar() {
           {({ isConnected: conn, show, address, truncatedAddress }) => (
             <button
               onClick={show}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all active:scale-95"
               style={{
                 background: conn ? 'var(--surface)' : 'var(--ink)',
                 border: conn ? '1.5px solid var(--ink)' : '1.5px solid var(--ink)',

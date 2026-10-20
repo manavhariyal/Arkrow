@@ -146,21 +146,21 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
           <div className="flex items-center gap-1.5">
           <button
             onClick={() => void copyLink(buildJobLink(jobId), 'Job link copied')}
-            className="text-xs px-2.5 py-1 rounded-lg transition-all hover:opacity-70"
+            className="text-sm px-2.5 py-1 rounded-lg transition-all hover:opacity-70"
             style={{ color: 'var(--ink-2)', background: 'var(--border)', border: 'none' }}
           >
             Copy link
           </button>
           <a
             href={buildReceiptLink(jobId)} target="_blank" rel="noopener noreferrer"
-            className="text-xs px-2.5 py-1 rounded-lg transition-all hover:opacity-70"
+            className="text-sm px-2.5 py-1 rounded-lg transition-all hover:opacity-70"
             style={{ color: 'var(--ink-2)', background: 'var(--border)', textDecoration: 'none' }}
           >
             Receipt
           </a>
           <button
             onClick={onClose}
-            className="text-xs px-2.5 py-1 rounded-lg transition-all hover:opacity-70"
+            className="text-sm px-2.5 py-1 rounded-lg transition-all hover:opacity-70"
             style={{ color: 'var(--muted)', background: 'var(--border)', border: 'none' }}
           >
             Close
@@ -174,19 +174,19 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
             className="flex items-center justify-between rounded-xl px-4 py-3"
             style={{ background: 'var(--green-light)', border: '1px solid var(--green-border)' }}
           >
-            <span className="text-xs" style={{ color: 'var(--green)' }}>Escrowed</span>
+            <span className="text-sm" style={{ color: 'var(--green)' }}>Escrowed</span>
             <div className="text-right">
               <div className="font-mono tabular text-lg font-bold" style={{ color: 'var(--green)' }}>
                 ${formatNativeUsdc(job.amount, 4)} USDC
               </div>
-              <div className="text-[11px]" style={{ color: 'var(--muted)' }}>
+              <div className="text-[13px]" style={{ color: 'var(--muted)' }}>
                 Worker gets ~${formatNativeUsdc(workerNet, 4)} after {Number(job.feeBps) / 100}% fee{job.referrer !== ZERO_ADDR && job.referrerBps > 0n ? ' and referrer share' : ''}
               </div>
             </div>
           </div>
 
           {/* Parties */}
-          <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="grid grid-cols-2 gap-2 text-sm">
             <Kv label="Buyer"    value={shortenAddr(job.buyer)}  mono copyable={job.buyer}  highlight={isBuyer  ? 'var(--green)'  : undefined} />
             <Kv label="Worker"   value={shortenAddr(job.worker)} mono copyable={job.worker} highlight={isWorker ? 'var(--green)' : undefined} />
             {job.referrer !== ZERO_ADDR && (
@@ -201,19 +201,19 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
               className="rounded-xl px-4 py-3"
               style={{ background: 'var(--amber-light)', border: '1px solid var(--amber-border)' }}
             >
-              <div className="text-[11px] mb-1" style={{ color: 'var(--muted)' }}>Proof hash (keccak256)</div>
-              <div className="font-mono text-[11px] break-all" style={{ color: 'var(--amber)' }}>
+              <div className="text-[13px] mb-1" style={{ color: 'var(--muted)' }}>Proof hash (keccak256)</div>
+              <div className="font-mono text-[13px] break-all" style={{ color: 'var(--amber)' }}>
                 {job.proofHash}
               </div>
               {proofContent ? (
                 <div className="mt-2 rounded-lg px-3 py-2" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                  <div className="text-[11px] mb-1" style={{ color: 'var(--muted)' }}>Proof from the worker</div>
+                  <div className="text-[13px] mb-1" style={{ color: 'var(--muted)' }}>Proof from the worker</div>
                   <ProofView text={proofContent} />
-                  <div className="text-[11px] mt-1.5 font-medium" style={{ color: 'var(--green)' }}>✓ Verified. This text matches the fingerprint stored on-chain.</div>
+                  <div className="text-[13px] mt-1.5 font-medium" style={{ color: 'var(--green)' }}>✓ Verified. This text matches the fingerprint stored on-chain.</div>
                 </div>
               ) : (
               <>
-              <div className="text-[11px] mt-2" style={{ color: 'var(--muted)' }}>
+              <div className="text-[13px] mt-2" style={{ color: 'var(--muted)' }}>
                 This job has a proof fingerprint only (no readable text). Ask the worker for the link or text and paste it below to confirm it is the exact one they submitted.
               </div>
               <input
@@ -221,13 +221,13 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
                 value={checkText}
                 onChange={e => setCheckText(e.target.value)}
                 placeholder="Paste the proof the worker sent you"
-                className="w-full text-xs px-3 py-2 rounded-lg outline-none mt-2"
+                className="w-full text-sm px-3 py-2 rounded-lg outline-none mt-2"
                 style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)', color: 'var(--ink)' }}
               />
               {checkText.trim() && (
                 keccak256(toBytes(checkText.trim())) === job.proofHash
-                  ? <div className="text-[11px] mt-1.5 font-medium" style={{ color: 'var(--green)' }}>✓ Match — this is the proof the worker submitted.</div>
-                  : <div className="text-[11px] mt-1.5 font-medium" style={{ color: 'var(--rose)' }}>✗ No match — this is not what the worker submitted. Check for extra spaces or a different link.</div>
+                  ? <div className="text-[13px] mt-1.5 font-medium" style={{ color: 'var(--green)' }}>✓ Match — this is the proof the worker submitted.</div>
+                  : <div className="text-[13px] mt-1.5 font-medium" style={{ color: 'var(--rose)' }}>✗ No match — this is not what the worker submitted. Check for extra spaces or a different link.</div>
               )}
               </>
               )}
@@ -281,7 +281,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
                 href={buildExplorerTx(hash)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs underline"
+                className="text-sm underline"
                 style={{ color: 'var(--green)' }}
               >
                 Confirmed — view on explorer
@@ -292,7 +292,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
           {/* Errors */}
           {(actionError || isError) && (
             <p
-              className="text-xs rounded-lg px-3 py-2"
+              className="text-sm rounded-lg px-3 py-2"
               style={{ background: 'var(--rose-light)', color: 'var(--rose)', border: '1px solid var(--rose-border)' }}
             >
               {parseErr(actionError || error?.message)}
@@ -302,7 +302,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
           {/* Worker: submit proof */}
           {canSubmit && (
             <div className="flex flex-col gap-2">
-              <label className="text-[11px] font-medium" style={{ color: 'var(--ink-2)' }}>
+              <label className="text-[13px] font-medium" style={{ color: 'var(--ink-2)' }}>
                 Submit proof (a link or short text). The buyer will see it in their dashboard. It is public on-chain, so never paste secrets.
               </label>
               <input
@@ -310,7 +310,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
                 value={proofText}
                 onChange={e => setProofText(e.target.value)}
                 placeholder="https://…"
-                className="w-full text-xs px-3 py-2.5 rounded-lg outline-none"
+                className="w-full text-sm px-3 py-2.5 rounded-lg outline-none"
                 style={{
                   background: 'var(--surface-muted)',
                   border: '1px solid var(--border)',
@@ -430,9 +430,9 @@ function Kv({ label, value, mono, copyable, highlight }: {
       className="rounded-lg px-3 py-2"
       style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)' }}
     >
-      <div className="text-[10px] mb-0.5" style={{ color: 'var(--muted)' }}>{label}</div>
+      <div className="text-xs mb-0.5" style={{ color: 'var(--muted)' }}>{label}</div>
       <div
-        className={`text-xs truncate ${mono ? 'font-mono' : ''} ${copyable ? 'cursor-pointer' : ''}`}
+        className={`text-sm truncate ${mono ? 'font-mono' : ''} ${copyable ? 'cursor-pointer' : ''}`}
         style={{ color: highlight ?? 'var(--ink-2)' }}
         title={copyable}
         onClick={copy}
@@ -454,7 +454,7 @@ function Notice({ color, children }: { color: NoticeVariant; children: React.Rea
   const s = styles[color]
   return (
     <div
-      className="rounded-xl px-4 py-3 text-xs font-medium"
+      className="rounded-xl px-4 py-3 text-sm font-medium"
       style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.text }}
     >
       {children}
@@ -472,7 +472,7 @@ function ActionBtn({ label, variant, onClick, busy, onWrongChain, onSwitch }: {
     return (
       <button
         onClick={onSwitch}
-        className="w-full py-2.5 rounded-lg text-xs font-medium transition-all"
+        className="w-full py-2.5 rounded-lg text-base font-medium transition-all"
         style={{ background: 'var(--rose-light)', color: 'var(--rose)', border: '1px solid var(--rose-border)' }}
       >
         Switch to {NETWORK_NAME}
@@ -492,7 +492,7 @@ function ActionBtn({ label, variant, onClick, busy, onWrongChain, onSwitch }: {
     <button
       onClick={onClick}
       disabled={busy}
-      className="w-full py-2.5 rounded-lg text-xs font-medium transition-all active:scale-[0.98]"
+      className="w-full py-2.5 rounded-lg text-base font-medium transition-all active:scale-[0.98]"
       style={{
         background: busy ? s.busyBg  : s.bg,
         border: `1px solid ${s.border}`,
@@ -532,10 +532,10 @@ function ProofView({ text }: { text: string }) {
     if (u.protocol === 'http:' || u.protocol === 'https:') href = u.toString()
   } catch { /* not a link */ }
   return href ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-xs underline break-all" style={{ color: 'var(--ink)' }}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm underline break-all" style={{ color: 'var(--ink)' }}>
       {text}
     </a>
   ) : (
-    <div className="text-xs break-words whitespace-pre-wrap" style={{ color: 'var(--ink)' }}>{text}</div>
+    <div className="text-sm break-words whitespace-pre-wrap" style={{ color: 'var(--ink)' }}>{text}</div>
   )
 }

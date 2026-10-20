@@ -85,11 +85,11 @@ export function ActionInbox() {
         <h2 className="font-serif text-lg" style={{ color: 'var(--ink)' }}>
           {items.length > 0 ? `Needs your action (${items.length})` : 'You are all caught up'}
         </h2>
-        <span className="text-[11px]" style={{ color: 'var(--muted)' }}>Checks your latest {SCAN} jobs</span>
+        <span className="text-[13px]" style={{ color: 'var(--muted)' }}>Checks your latest {SCAN} jobs</span>
       </div>
 
       {items.length === 0 && (
-        <p className="text-xs" style={{ color: 'var(--muted)' }}>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>
           Nothing is waiting for you. New tasks, such as a proof to review, will show up here.
         </p>
       )}
@@ -108,9 +108,9 @@ export function ActionInbox() {
         >
           <span className="min-w-0">
             <span className="block text-sm font-medium">{it.title}</span>
-            <span className="block text-[11px]" style={{ color: 'var(--muted)' }}>{it.detail}</span>
+            <span className="block text-[13px]" style={{ color: 'var(--muted)' }}>{it.detail}</span>
           </span>
-          <span className="text-xs font-medium shrink-0">Open</span>
+          <span className="text-sm font-medium shrink-0">Open</span>
         </button>
       ))}
     </motion.section>

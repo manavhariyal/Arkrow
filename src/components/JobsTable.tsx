@@ -41,7 +41,7 @@ export function JobsTable({ refreshKey }: { refreshKey: number }) {
           Recent jobs
         </h2>
         {total > 0 && (
-          <span className="text-xs tabular font-mono" style={{ color: 'var(--muted)' }}>
+          <span className="text-sm tabular font-mono" style={{ color: 'var(--muted)' }}>
             {total} total
           </span>
         )}
@@ -118,16 +118,16 @@ function JobRow({
         {/* Left */}
         <div className="flex items-center gap-3 min-w-0">
           <span
-            className="font-mono text-xs shrink-0 tabular"
+            className="font-mono text-sm shrink-0 tabular"
             style={{ color: 'var(--muted)', minWidth: 28 }}
           >
             #{jobId.toString()}
           </span>
           <div className="min-w-0">
-            <div className="text-xs font-medium truncate" style={{ color: 'var(--ink)' }}>
+            <div className="text-sm font-medium truncate" style={{ color: 'var(--ink)' }}>
               {shortenAddr(job.buyer)} → {shortenAddr(job.worker)}
             </div>
-            <div className="text-[11px] tabular" style={{ color: 'var(--muted)' }}>
+            <div className="text-[13px] tabular" style={{ color: 'var(--muted)' }}>
               Due {deadline.toLocaleDateString()}
             </div>
           </div>
@@ -161,7 +161,7 @@ function Empty() {
         <span style={{ color: 'var(--muted)' }}>≡</span>
       </div>
       <p className="text-sm font-medium" style={{ color: 'var(--ink-2)' }}>No jobs yet</p>
-      <p className="text-xs" style={{ color: 'var(--muted)' }}>Post the first job to get started.</p>
+      <p className="text-sm" style={{ color: 'var(--muted)' }}>Post the first job to get started.</p>
     </motion.div>
   )
 }

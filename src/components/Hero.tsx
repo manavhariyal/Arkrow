@@ -32,7 +32,7 @@ export function Hero() {
       <MoneyCard />
 
       <p
-        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mb-5"
+        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-5"
         style={{
           background: 'rgba(255,253,248,0.8)',
           border: '1.5px solid var(--ink)',
@@ -67,7 +67,7 @@ export function Hero() {
       </div>
 
       <p
-        className="mt-5 text-[11px]"
+        className="mt-5 text-[13px]"
         style={{ color: 'var(--muted)' }}
       >
         {IS_MAINNET ? 'Unaudited app. Use small amounts only.' : 'Unaudited testnet app. Use small amounts only.'}
@@ -85,7 +85,7 @@ function Stat({ label, value }: { label: string; value: string }) {
       <div className="tabular font-mono text-sm font-medium" style={{ color: 'var(--ink)' }}>
         {value}
       </div>
-      <div className="text-[11px] mt-0.5" style={{ color: 'var(--muted)' }}>{label}</div>
+      <div className="text-[13px] mt-0.5" style={{ color: 'var(--muted)' }}>{label}</div>
     </div>
   )
 }
@@ -100,9 +100,9 @@ function MoneyCard() {
       aria-hidden
     >
       <div className="flex items-center justify-between">
-        <span className="font-mono text-xs" style={{ color: 'var(--muted)' }}>Example job</span>
+        <span className="font-mono text-sm" style={{ color: 'var(--muted)' }}>Example job</span>
         <span
-          className="text-[11px] font-medium px-2.5 py-0.5 rounded-full"
+          className="text-[13px] font-medium px-2.5 py-0.5 rounded-full"
           style={{ background: 'var(--green-light)', border: '1px solid var(--green-border)', color: 'var(--green)' }}
         >
           Released
@@ -112,7 +112,7 @@ function MoneyCard() {
       <p className="font-serif text-5xl mt-3 tabular" style={{ color: 'var(--ink)', lineHeight: 1 }}>
         5.00 <span className="text-xl" style={{ color: 'var(--ink-2)' }}>USDC</span>
       </p>
-      <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>locked in escrow</p>
+      <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>locked in escrow</p>
 
       <div
         className="flex h-3 mt-5 rounded-full overflow-hidden"
@@ -121,7 +121,7 @@ function MoneyCard() {
         <div style={{ width: '97.5%', background: 'var(--saffron)' }} />
         <div style={{ width: '2.5%', background: 'var(--ink)' }} />
       </div>
-      <div className="flex justify-between mt-2 text-xs tabular">
+      <div className="flex justify-between mt-2 text-sm tabular">
         <span style={{ color: 'var(--ink)' }}>Worker <b className="font-mono">4.8750</b></span>
         <span style={{ color: 'var(--ink-2)' }}>Fee 2.5% <b className="font-mono">0.1250</b></span>
       </div>
@@ -129,7 +129,7 @@ function MoneyCard() {
       <div className="flex items-center mt-5 pt-4" style={{ borderTop: '1px dashed var(--border-strong)' }}>
         {steps.map((st, i) => (
           <div key={st} className="flex items-center flex-1 last:flex-none">
-            <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--ink)' }}>
+            <span className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--ink)' }}>
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: i === 2 ? 'var(--coral)' : 'var(--ink)' }} />
               {st}
             </span>

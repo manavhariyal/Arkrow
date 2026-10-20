@@ -253,7 +253,7 @@ export function ActivityFeed() {
       <div className="flex items-center justify-between">
         <h2 className="font-serif text-xl" style={{ color: 'var(--ink)' }}>Live activity</h2>
         <span
-          className="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-full"
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium px-2.5 py-1 rounded-full"
           style={{ background: 'var(--green-light)', border: '1px solid var(--green-border)', color: 'var(--green)' }}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
@@ -293,7 +293,7 @@ function FeedRowItem({ row }: { row: FeedRow }) {
     >
       {/* Job number */}
       <span
-        className="font-mono text-xs tabular shrink-0"
+        className="font-mono text-sm tabular shrink-0"
         style={{ color: 'var(--muted)', minWidth: 28 }}
       >
         #{row.jobId.toString()}
@@ -303,7 +303,7 @@ function FeedRowItem({ row }: { row: FeedRow }) {
       <div className="flex-1 min-w-0">
         {/* Addresses row */}
         {(participant || counterpart) && (
-          <div className="font-mono text-[11px] truncate mb-0.5" style={{ color: 'var(--ink-2)' }}>
+          <div className="font-mono text-[13px] truncate mb-0.5" style={{ color: 'var(--ink-2)' }}>
             {participant  ? shortenAddr(participant)  : '–'}
             {counterpart && participant !== counterpart
               ? ` → ${shortenAddr(counterpart)}`
@@ -312,7 +312,7 @@ function FeedRowItem({ row }: { row: FeedRow }) {
         )}
         {/* Amount if present */}
         {row.amount != null && row.amount > 0n && (
-          <div className="font-mono tabular text-[11px]" style={{ color: 'var(--green)' }}>
+          <div className="font-mono tabular text-[13px]" style={{ color: 'var(--green)' }}>
             ${formatNativeUsdc(row.amount, 2)} USDC
           </div>
         )}
@@ -323,14 +323,14 @@ function FeedRowItem({ row }: { row: FeedRow }) {
 
       {/* Relative time + explorer */}
       <div className="flex flex-col items-end gap-0.5 shrink-0">
-        <span className="text-[11px]" style={{ color: 'var(--muted)' }}>
+        <span className="text-[13px]" style={{ color: 'var(--muted)' }}>
           {relativeTime(row.ts)}
         </span>
         <a
           href={buildExplorerTx(row.txHash)}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[10px] underline"
+          className="text-xs underline"
           style={{ color: 'var(--green)' }}
           onClick={e => e.stopPropagation()}
         >
@@ -355,7 +355,7 @@ function EmptyFeed() {
         <span className="text-xl" style={{ color: 'var(--muted)' }}>◎</span>
       </div>
       <p className="text-sm font-medium" style={{ color: 'var(--ink-2)' }}>No activity yet</p>
-      <p className="text-xs text-center max-w-[200px]" style={{ color: 'var(--muted)' }}>
+      <p className="text-sm text-center max-w-[200px]" style={{ color: 'var(--muted)' }}>
         New events will appear here automatically as jobs are created and updated.
       </p>
     </motion.div>

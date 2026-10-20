@@ -25,16 +25,16 @@ export function TryIt() {
         style={{ color: 'var(--ink)' }}
       >
         <span className="font-serif text-xl">New here? Try it in 2 minutes</span>
-        <span className="text-xs" style={{ color: 'var(--muted)' }}>Show steps</span>
+        <span className="text-sm whitespace-nowrap font-medium" style={{ color: 'var(--muted)' }}>Show steps</span>
       </summary>
 
       <div className="px-5 pb-5 flex flex-col gap-4 text-sm" style={{ color: 'var(--ink-2)' }}>
         <div>
           <p className="font-medium" style={{ color: 'var(--ink)' }}>1. Add Arc Testnet to your wallet</p>
-          <p className="text-xs mt-1">Click any value to copy it.</p>
+          <p className="text-sm mt-1">Click any value to copy it.</p>
           <dl className="mt-2 flex flex-col gap-1.5">
             {NETWORK.map(n => (
-              <div key={n.label} className="flex flex-col gap-0.5 text-xs">
+              <div key={n.label} className="flex flex-col gap-0.5 text-sm">
                 <dt style={{ color: 'var(--muted)' }}>{n.label}</dt>
                 <dd className="m-0 min-w-0">
                   <button
@@ -53,7 +53,7 @@ export function TryIt() {
 
         <div>
           <p className="font-medium" style={{ color: 'var(--ink)' }}>2. Get free testnet USDC</p>
-          <p className="text-xs mt-1">
+          <p className="text-sm mt-1">
             Open the{' '}
             <a
               href="https://faucet.circle.com"
@@ -70,7 +70,7 @@ export function TryIt() {
 
         <div>
           <p className="font-medium" style={{ color: 'var(--ink)' }}>3. Post a job</p>
-          <p className="text-xs mt-1">
+          <p className="text-sm mt-1">
             Use a second address you control as the worker, with a small amount like 1 USDC.
             The worker needs a little USDC too, because gas on Arc is paid in USDC.
           </p>

@@ -113,13 +113,13 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
           <span style={{ color: 'var(--green)' }}>✓</span>
         </div>
         <p className="font-medium text-sm" style={{ color: 'var(--ink)' }}>Job created</p>
-        <p className="text-xs" style={{ color: 'var(--muted)' }}>USDC is now locked in escrow.</p>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>USDC is now locked in escrow.</p>
         {hash && (
           <a
             href={buildExplorerTx(hash)}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs underline"
+            className="text-sm underline"
             style={{ color: 'var(--green)' }}
           >
             View on explorer
@@ -134,7 +134,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
             setReferrerBps('')
             setDeadlineDays('7')
           }}
-          className="text-xs px-4 py-2 rounded-lg font-medium transition-all hover:opacity-80"
+          className="text-sm px-4 py-2 rounded-lg font-medium transition-all hover:opacity-80"
           style={{ background: 'var(--ink)', color: '#FFF', border: 'none' }}
         >
           Post another job
@@ -162,7 +162,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
     >
       <div>
         <h2 className="font-serif text-xl" style={{ color: 'var(--ink)' }}>Post a job</h2>
-        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>
           Lock USDC in escrow and assign a worker agent.
         </p>
       </div>
@@ -174,7 +174,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
             value={worker}
             onChange={e => setWorker(e.target.value)}
             placeholder="0x…"
-            className="w-full font-mono text-xs px-3 py-2.5 rounded-lg outline-none transition-all"
+            className="w-full font-mono text-sm px-3 py-2.5 rounded-lg outline-none transition-all"
             style={inputStyle}
           />
         </Field>
@@ -208,7 +208,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
 
         <details className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border)' }}>
           <summary
-            className="px-3 py-2 text-xs cursor-pointer select-none font-medium"
+            className="px-3 py-2 text-sm cursor-pointer select-none font-medium"
             style={{ color: 'var(--muted)', background: 'var(--surface-muted)' }}
           >
             Optional referrer
@@ -220,7 +220,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
                 value={referrer}
                 onChange={e => setReferrer(e.target.value)}
                 placeholder="0x… (optional)"
-                className="w-full font-mono text-xs px-3 py-2.5 rounded-lg outline-none transition-all"
+                className="w-full font-mono text-sm px-3 py-2.5 rounded-lg outline-none transition-all"
                 style={inputStyle}
               />
             </Field>
@@ -241,7 +241,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
         </details>
 
         {fromLink && (
-          <p className="text-xs rounded-lg px-3 py-2"
+          <p className="text-sm rounded-lg px-3 py-2"
             style={{ background: 'var(--amber-light)', color: 'var(--amber)', border: '1px solid var(--amber-border)' }}>
             This form was filled in from a link. Check the worker address and amount carefully before you lock any funds.
           </p>
@@ -254,28 +254,28 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
               buildRequestLink({ worker, amount: amount.trim(), days: deadlineDays.trim(), referrer: isAddress(referrer) ? referrer : '', bps: referrerBps.trim() }),
               'Request link copied. Whoever opens it sees this form filled in.',
             )}
-            className="text-[11px] underline self-start"
+            className="text-[13px] underline self-start"
             style={{ color: 'var(--ink-2)', background: 'none', border: 'none', padding: 0 }}
           >
             Copy a link to this job request
           </button>
         )}
 
-        <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
+        <p className="text-[13px]" style={{ color: 'var(--muted)' }}>
           {balance ? `Balance: ${formatNativeUsdc(balance.value, 2)} USDC · ` : ''}
           Limit: {info.maxJobUsdc} USDC per job
           {info.feePct !== null ? ` · Fee: ${info.feePct}% (only when the job is paid)` : ''}
         </p>
 
         {formError && (
-          <p className="text-xs rounded-lg px-3 py-2"
+          <p className="text-sm rounded-lg px-3 py-2"
             style={{ background: 'var(--rose-light)', color: 'var(--rose)', border: '1px solid var(--rose-border)' }}>
             {formError}
           </p>
         )}
 
         {isError && !formError && (
-          <p className="text-xs rounded-lg px-3 py-2"
+          <p className="text-sm rounded-lg px-3 py-2"
             style={{ background: 'var(--rose-light)', color: 'var(--rose)', border: '1px solid var(--rose-border)' }}>
             {parseContractError(error?.message)}
           </p>
@@ -287,7 +287,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
               <button
                 type="button"
                 onClick={show}
-                className="w-full py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-80"
+                className="w-full py-2.5 rounded-lg text-base font-medium transition-all hover:opacity-80"
                 style={{ background: 'var(--ink)', color: '#FFF', border: 'none' }}
               >
                 Connect wallet to post
@@ -299,7 +299,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
             type="button"
             onClick={() => switchChain({ chainId: ARKROW_CHAIN_ID })}
             disabled={isSwitching}
-            className="w-full py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-80"
+            className="w-full py-2.5 rounded-lg text-base font-medium transition-all hover:opacity-80"
             style={{ background: 'var(--rose-light)', color: 'var(--rose)', border: '1px solid var(--rose-border)' }}
           >
             {isSwitching ? 'Switching…' : `Switch to ${NETWORK_NAME}`}
@@ -308,7 +308,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
           <button
             type="submit"
             disabled={isBusy}
-            className="w-full py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.98]"
+            className="w-full py-2.5 rounded-lg text-base font-medium transition-all active:scale-[0.98]"
             style={{
               background: isBusy ? 'var(--border)' : 'var(--ink)',
               color: isBusy ? 'var(--muted)' : '#FFF',
@@ -349,8 +349,8 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-baseline justify-between">
-        <label className="text-[11px] font-medium" style={{ color: 'var(--ink-2)' }}>{label}</label>
-        {hint && <span className="text-[10px]" style={{ color: 'var(--muted)' }}>{hint}</span>}
+        <label className="text-[13px] font-medium" style={{ color: 'var(--ink-2)' }}>{label}</label>
+        {hint && <span className="text-xs" style={{ color: 'var(--muted)' }}>{hint}</span>}
       </div>
       {children}
     </div>
