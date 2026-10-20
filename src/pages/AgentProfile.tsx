@@ -51,7 +51,7 @@ export default function AgentProfile({ address }: { address: `0x${string}` }) {
       <main className="max-w-2xl mx-auto px-4 sm:px-6 pb-16 pt-4 flex flex-col gap-5">
         <section className="card p-5 sm:p-7 flex flex-col gap-4">
           <div>
-            <p className="text-xs" style={{ color: 'var(--muted)' }}>Agent profile · {NETWORK_NAME}</p>
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>Agent profile · {NETWORK_NAME}</p>
             <h1 className="font-mono text-sm sm:text-base break-all mt-1" style={{ color: 'var(--ink)' }}>{address}</h1>
           </div>
 
@@ -62,7 +62,7 @@ export default function AgentProfile({ address }: { address: `0x${string}` }) {
             <Stat label="Refunded (recent)" value={String(refunded)} />
           </div>
 
-          <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
+          <p className="text-[13px]" style={{ color: 'var(--muted)' }}>
             Jobs completed and total earned are counted by the contract itself and cannot be edited. Disputed and refunded counts only cover the latest {SCAN} jobs.
           </p>
 
@@ -70,14 +70,14 @@ export default function AgentProfile({ address }: { address: `0x${string}` }) {
             <button
               type="button"
               onClick={() => void copyLink(buildAgentLink(address), 'Profile link copied')}
-              className="text-xs px-4 py-2 font-medium"
+              className="text-sm px-4 py-2 font-medium"
               style={{ background: 'var(--ink)', color: '#FFF', border: 'none' }}
             >
               Copy profile link
             </button>
             <a
               href={buildExplorerAddr(address)} target="_blank" rel="noopener noreferrer"
-              className="text-xs px-4 py-2 font-medium"
+              className="text-sm px-4 py-2 font-medium"
               style={{ border: '1px solid var(--border)', color: 'var(--ink)', borderRadius: 999, textDecoration: 'none' }}
             >
               View wallet on the explorer
@@ -87,7 +87,7 @@ export default function AgentProfile({ address }: { address: `0x${string}` }) {
 
         <section className="flex flex-col gap-2">
           <h2 className="font-serif text-xl" style={{ color: 'var(--ink)' }}>Recent jobs</h2>
-          {isLoading && <p className="text-xs" style={{ color: 'var(--muted)' }}>Loading…</p>}
+          {isLoading && <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading…</p>}
           {!isLoading && mine.length === 0 && (
             <p className="text-sm" style={{ color: 'var(--muted)' }}>No recent jobs for this address.</p>
           )}
@@ -100,7 +100,7 @@ export default function AgentProfile({ address }: { address: `0x${string}` }) {
             >
               <span className="min-w-0">
                 <span className="block text-sm font-medium">Job #{m.id.toString()} · as {m.role.toLowerCase()}</span>
-                <span className="block text-[11px] font-mono" style={{ color: 'var(--muted)' }}>{formatNativeUsdc(m.job.amount, 2)} USDC</span>
+                <span className="block text-[13px] font-mono" style={{ color: 'var(--muted)' }}>{formatNativeUsdc(m.job.amount, 2)} USDC</span>
               </span>
               <StatusBadge status={m.job.status} />
             </a>
@@ -115,7 +115,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl px-4 py-3" style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)' }}>
       <div className="font-mono tabular text-lg font-semibold" style={{ color: 'var(--ink)' }}>{value}</div>
-      <div className="text-[11px]" style={{ color: 'var(--muted)' }}>{label}</div>
+      <div className="text-[13px]" style={{ color: 'var(--muted)' }}>{label}</div>
     </div>
   )
 }

@@ -50,26 +50,26 @@ export default function Receipt({ jobId }: { jobId: bigint }) {
           <article className="card p-5 sm:p-7 flex flex-col gap-5">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs" style={{ color: 'var(--muted)' }}>Arkrow receipt · {NETWORK_NAME}</p>
+                <p className="text-sm" style={{ color: 'var(--muted)' }}>Arkrow receipt · {NETWORK_NAME}</p>
                 <h1 className="font-serif text-3xl" style={{ color: 'var(--ink)' }}>Job #{jobId.toString()}</h1>
               </div>
               <StatusBadge status={job.status} />
             </div>
 
             <div className="rounded-xl px-4 py-4" style={{ background: 'var(--green-light)', border: '1px solid var(--green-border)' }}>
-              <p className="text-xs" style={{ color: 'var(--green)' }}>
+              <p className="text-sm" style={{ color: 'var(--green)' }}>
                 {status === JobStatus.RELEASED ? 'Paid out' : status === JobStatus.REFUNDED ? 'Returned to the buyer' : 'Locked in escrow'}
               </p>
               <p className="font-mono tabular text-3xl font-bold" style={{ color: 'var(--green)' }}>
                 {formatNativeUsdc(status === JobStatus.RELEASED ? split.worker : job.amount, 4)} USDC
               </p>
               {status === JobStatus.RELEASED && (
-                <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
+                <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>
                   Received by the worker, from {formatNativeUsdc(job.amount, 4)} USDC escrowed.
                 </p>
               )}
               {(status === JobStatus.OPEN || status === JobStatus.PROOF_SUBMITTED || status === JobStatus.DISPUTED) && (
-                <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
+                <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>
                   This job is not finished yet, so this receipt can still change.
                 </p>
               )}
@@ -88,12 +88,12 @@ export default function Receipt({ jobId }: { jobId: bigint }) {
 
             {hasProof && (
               <div className="rounded-xl px-4 py-3" style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)' }}>
-                <p className="text-xs mb-1" style={{ color: 'var(--muted)' }}>Proof from the worker</p>
+                <p className="text-sm mb-1" style={{ color: 'var(--muted)' }}>Proof from the worker</p>
                 {proofText
                   ? <p className="text-sm break-words whitespace-pre-wrap" style={{ color: 'var(--ink)' }}>{proofText}</p>
-                  : <p className="text-xs" style={{ color: 'var(--muted)' }}>Only a fingerprint was submitted for this job.</p>}
-                {proofVerified && <p className="text-[11px] mt-1.5 font-medium" style={{ color: 'var(--green)' }}>✓ Matches the fingerprint stored on-chain.</p>}
-                <p className="font-mono text-[10px] mt-2 break-all" style={{ color: 'var(--muted)' }}>{job.proofHash}</p>
+                  : <p className="text-sm" style={{ color: 'var(--muted)' }}>Only a fingerprint was submitted for this job.</p>}
+                {proofVerified && <p className="text-[13px] mt-1.5 font-medium" style={{ color: 'var(--green)' }}>✓ Matches the fingerprint stored on-chain.</p>}
+                <p className="font-mono text-xs mt-2 break-all" style={{ color: 'var(--muted)' }}>{job.proofHash}</p>
               </div>
             )}
 
@@ -101,21 +101,21 @@ export default function Receipt({ jobId }: { jobId: bigint }) {
               <button
                 type="button"
                 onClick={() => void copyLink(buildReceiptLink(jobId), 'Receipt link copied')}
-                className="text-xs px-4 py-2 font-medium"
+                className="text-sm px-4 py-2 font-medium"
                 style={{ background: 'var(--ink)', color: '#FFF', border: 'none' }}
               >
                 Copy receipt link
               </button>
               <a
                 href={buildExplorerAddr(ARKROW_ADDRESS)} target="_blank" rel="noopener noreferrer"
-                className="text-xs px-4 py-2 font-medium"
+                className="text-sm px-4 py-2 font-medium"
                 style={{ border: '1px solid var(--border)', color: 'var(--ink)', borderRadius: 999, textDecoration: 'none' }}
               >
                 View the contract on the explorer
               </a>
             </div>
 
-            <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
+            <p className="text-[13px]" style={{ color: 'var(--muted)' }}>
               This page reads straight from the Arc blockchain. Nobody, including Arkrow, can edit what it shows.
             </p>
           </article>
@@ -128,8 +128,8 @@ export default function Receipt({ jobId }: { jobId: bigint }) {
 function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[11px]" style={{ color: 'var(--muted)' }}>{label}</dt>
-      <dd className={`${mono ? 'font-mono text-xs' : 'text-sm'} break-all`} style={{ color: 'var(--ink)' }}>{value}</dd>
+      <dt className="text-[13px]" style={{ color: 'var(--muted)' }}>{label}</dt>
+      <dd className={`${mono ? 'font-mono text-sm' : 'text-sm'} break-all`} style={{ color: 'var(--ink)' }}>{value}</dd>
     </div>
   )
 }

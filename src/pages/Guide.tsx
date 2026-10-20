@@ -78,7 +78,7 @@ export default function Guide() {
           <Detail label="RPC" value={RPC} />
           <Detail label="Arkrow contract" value={ARKROW_ADDRESS} copy />
           <Detail label="Gas and payments" value="USDC (the native coin, 18 decimals)" />
-          <a href={buildExplorerAddr(ARKROW_ADDRESS)} target="_blank" rel="noopener noreferrer" className="text-xs underline" style={{ color: 'var(--ink-2)' }}>
+          <a href={buildExplorerAddr(ARKROW_ADDRESS)} target="_blank" rel="noopener noreferrer" className="text-sm underline" style={{ color: 'var(--ink-2)' }}>
             View the contract on the explorer
           </a>
         </section>
@@ -99,7 +99,7 @@ export default function Guide() {
           <Code text={BUYER_CODE} />
           <h2 className="font-serif text-xl mt-2" style={{ color: 'var(--ink)' }}>Code for the worker agent</h2>
           <Code text={WORKER_CODE} />
-          <p className="text-xs" style={{ color: 'var(--muted)' }}>
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>
             Examples use viem. Any library that can call a contract works. The job number comes from the job counter, which the app also shows.
           </p>
         </section>
@@ -117,7 +117,7 @@ export default function Guide() {
         </section>
 
         <section className="card p-5">
-          <p className="text-xs" style={{ color: 'var(--muted)' }}>
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>
             Arkrow is unaudited. Use small amounts. Disputes are decided by the contract owner, which is one person today.
           </p>
         </section>
@@ -129,10 +129,10 @@ export default function Guide() {
 function Detail({ label, value, copy }: { label: string; value: string; copy?: boolean }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-3 min-w-0">
-      <span className="text-[11px] sm:w-32 shrink-0" style={{ color: 'var(--muted)' }}>{label}</span>
-      <span className="font-mono text-xs break-all" style={{ color: 'var(--ink)' }}>{value}</span>
+      <span className="text-[13px] sm:w-32 shrink-0" style={{ color: 'var(--muted)' }}>{label}</span>
+      <span className="font-mono text-sm break-all" style={{ color: 'var(--ink)' }}>{value}</span>
       {copy && (
-        <button type="button" onClick={() => void copyLink(value, 'Copied')} className="text-[11px] underline self-start" style={{ background: 'none', border: 'none', padding: 0, color: 'var(--ink-2)' }}>
+        <button type="button" onClick={() => void copyLink(value, 'Copied')} className="text-[13px] underline self-start" style={{ background: 'none', border: 'none', padding: 0, color: 'var(--ink-2)' }}>
           Copy
         </button>
       )}
@@ -144,11 +144,11 @@ function Code({ text }: { text: string }) {
   return (
     <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
       <div className="flex justify-end px-3 py-1.5" style={{ background: 'var(--surface-muted)', borderBottom: '1px solid var(--border)' }}>
-        <button type="button" onClick={() => void copyLink(text, 'Code copied')} className="text-[11px] underline" style={{ background: 'none', border: 'none', color: 'var(--ink-2)' }}>
+        <button type="button" onClick={() => void copyLink(text, 'Code copied')} className="text-[13px] underline" style={{ background: 'none', border: 'none', color: 'var(--ink-2)' }}>
           Copy code
         </button>
       </div>
-      <pre className="p-4 text-[11px] leading-relaxed overflow-x-auto m-0" style={{ background: 'var(--surface)', color: 'var(--ink)' }}>
+      <pre className="p-4 text-[13px] leading-relaxed overflow-x-auto m-0" style={{ background: 'var(--surface)', color: 'var(--ink)' }}>
         <code>{text}</code>
       </pre>
     </div>
