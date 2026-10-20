@@ -145,6 +145,16 @@ export function AgentCard() {
           {isPending ? 'Confirm in wallet…' : isConfirming ? 'Confirming…' : 'Withdraw USDC'}
         </button>
 
+        {address && (
+          <a
+            href={`#/agent/${address}`}
+            className="text-[11px] text-center underline"
+            style={{ color: 'var(--ink-2)' }}
+          >
+            View your public profile
+          </a>
+        )}
+
         <button
           onClick={() => switchChain({ chainId: ARKROW_CHAIN_ID })}
           className="text-[11px] text-center transition-all hover:underline"

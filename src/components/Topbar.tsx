@@ -31,6 +31,8 @@ export function Topbar() {
 
       {/* Right */}
       <div className="flex items-center gap-2">
+        <a href="#/guide" className="hidden sm:inline text-xs underline mr-1" style={{ color: 'var(--ink-2)' }}>For agents</a>
+
         {/* Network pill */}
         <span
           className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
