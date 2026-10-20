@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi'
 import { ConnectKitButton } from 'connectkit'
 import { motion } from 'framer-motion'
@@ -9,6 +9,7 @@ import {
 } from '../arkrow'
 import { useProtocolInfo } from '../protocol'
 import { ConfirmDialog } from './ConfirmDialog'
+import { useHashParams, parsePrefill, buildRequestLink, copyLink } from '../links'
 
 // Kept aside for the network fee so a job never uses the very last of the wallet's USDC.
 const GAS_RESERVE = 20_000_000_000_000_000n // 0.02 USDC
@@ -25,6 +26,22 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
   const [amount, setAmount]             = useState('')
   const [formError, setFormError]       = useState('')
   const [confirmOpen, setConfirmOpen]   = useState(false)
+
+  const [fromLink, setFromLink] = useState(false)
+  const hashParams = useHashParams()
+  const prefillKey = hashParams.toString()
+
+  // A link like #/app?worker=0x…&amount=1&days=7 fills in the form. The person still reviews and confirms.
+  useEffect(() => {
+    const p = parsePrefill(new URLSearchParams(prefillKey))
+    if (!p) return
+    setWorker(p.worker)
+    if (p.amount) setAmount(p.amount)
+    if (p.days) setDeadlineDays(p.days)
+    if (p.referrer) setReferrer(p.referrer)
+    if (p.bps) setReferrerBps(p.bps)
+    setFromLink(true)
+  }, [prefillKey])
 
   const info = useProtocolInfo()
   const { data: balance } = useBalance({
@@ -222,6 +239,27 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
             </Field>
           </div>
         </details>
+
+        {fromLink && (
+          <p className="text-xs rounded-lg px-3 py-2"
+            style={{ background: 'var(--amber-light)', color: 'var(--amber)', border: '1px solid var(--amber-border)' }}>
+            This form was filled in from a link. Check the worker address and amount carefully before you lock any funds.
+          </p>
+        )}
+
+        {isAddress(worker) && (
+          <button
+            type="button"
+            onClick={() => void copyLink(
+              buildRequestLink({ worker, amount: amount.trim(), days: deadlineDays.trim(), referrer: isAddress(referrer) ? referrer : '', bps: referrerBps.trim() }),
+              'Request link copied. Whoever opens it sees this form filled in.',
+            )}
+            className="text-[11px] underline self-start"
+            style={{ color: 'var(--ink-2)', background: 'none', border: 'none', padding: 0 }}
+          >
+            Copy a link to this job request
+          </button>
+        )}
 
         <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
           {balance ? `Balance: ${formatNativeUsdc(balance.value, 2)} USDC · ` : ''}

@@ -9,6 +9,8 @@ import {
 } from '../arkrow'
 import { useNow, formatDuration } from '../protocol'
 import { ConfirmDialog } from './ConfirmDialog'
+import { payoutSplit } from '../jobmath'
+import { buildJobLink, buildReceiptLink, copyLink } from '../links'
 import { StatusBadge } from './StatusBadge'
 
 const ZERO_HASH = `0x${'0'.repeat(64)}`
@@ -114,8 +116,9 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
   const canSubmit        = isWorker && st === JobStatus.OPEN            && now < Number(job.deadline)
   const canExpireDispute = disputeCanExpire
 
-  const workerFee = (job.amount * job.feeBps) / 10000n
-  const workerNet = job.amount - workerFee
+  const split = payoutSplit(job)
+  const workerNet = split.worker
+  const workerFee = split.fee
 
   const ZERO_ADDR  = '0x0000000000000000000000000000000000000000'
   const ZERO_BYTES = ZERO_HASH
@@ -140,6 +143,21 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
             </span>
             <StatusBadge status={job.status} />
           </div>
+          <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => void copyLink(buildJobLink(jobId), 'Job link copied')}
+            className="text-xs px-2.5 py-1 rounded-lg transition-all hover:opacity-70"
+            style={{ color: 'var(--ink-2)', background: 'var(--border)', border: 'none' }}
+          >
+            Copy link
+          </button>
+          <a
+            href={buildReceiptLink(jobId)} target="_blank" rel="noopener noreferrer"
+            className="text-xs px-2.5 py-1 rounded-lg transition-all hover:opacity-70"
+            style={{ color: 'var(--ink-2)', background: 'var(--border)', textDecoration: 'none' }}
+          >
+            Receipt
+          </a>
           <button
             onClick={onClose}
             className="text-xs px-2.5 py-1 rounded-lg transition-all hover:opacity-70"
@@ -147,6 +165,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
           >
             Close
           </button>
+          </div>
         </div>
 
         <div className="p-5 flex flex-col gap-4">
@@ -161,7 +180,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
                 ${formatNativeUsdc(job.amount, 4)} USDC
               </div>
               <div className="text-[11px]" style={{ color: 'var(--muted)' }}>
-                Worker gets ~${formatNativeUsdc(workerNet, 4)} after {Number(job.feeBps) / 100}% fee
+                Worker gets ~${formatNativeUsdc(workerNet, 4)} after {Number(job.feeBps) / 100}% fee{job.referrer !== ZERO_ADDR && job.referrerBps > 0n ? ' and referrer share' : ''}
               </div>
             </div>
           </div>
@@ -363,6 +382,7 @@ export function JobPanel({ jobId, onClose, onAction }: Props) {
           rows={[
             { label: 'Worker receives', value: `${formatNativeUsdc(workerNet, 4)} USDC` },
             { label: 'Arkrow fee', value: `${formatNativeUsdc(workerFee, 4)} USDC` },
+            ...(split.referrer > 0n ? [{ label: 'Referrer receives', value: `${formatNativeUsdc(split.referrer, 4)} USDC` }] : []),
             { label: 'Worker address', value: job.worker, mono: true },
           ]}
           warning="This pays the worker now and cannot be undone. Only approve after you have checked the proof."

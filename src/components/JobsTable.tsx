@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useReadContract } from 'wagmi'
 import { motion } from 'framer-motion'
 import {
@@ -7,9 +7,21 @@ import {
 } from '../arkrow'
 import { StatusBadge } from './StatusBadge'
 import { JobPanel } from './JobPanel'
+import { useHashParams, parseJobParam } from '../links'
 
 export function JobsTable({ refreshKey }: { refreshKey: number }) {
   const [selectedId, setSelectedId] = useState<bigint | null>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const jobParam = parseJobParam(useHashParams().get('job'))
+  const jobParamKey = jobParam ? jobParam.toString() : ''
+
+  // A link like #/app?job=7 opens that job.
+  useEffect(() => {
+    if (!jobParamKey) return
+    setSelectedId(BigInt(jobParamKey))
+    const t = window.setTimeout(() => panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150)
+    return () => window.clearTimeout(t)
+  }, [jobParamKey])
 
   const { data: jobCounter } = useReadContract({
     address: ARKROW_ADDRESS,
@@ -37,12 +49,14 @@ export function JobsTable({ refreshKey }: { refreshKey: number }) {
 
       {/* Selected job panel */}
       {selectedId !== null && (
-        <JobPanel
-          key={selectedId.toString()}
-          jobId={selectedId}
-          onClose={() => setSelectedId(null)}
-          onAction={() => {/* refreshKey already handles refetch */}}
-        />
+        <div ref={panelRef}>
+          <JobPanel
+            key={selectedId.toString()}
+            jobId={selectedId}
+            onClose={() => setSelectedId(null)}
+            onAction={() => {/* refreshKey already handles refetch */}}
+          />
+        </div>
       )}
 
       {total === 0 && <Empty />}
