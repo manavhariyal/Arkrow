@@ -18,6 +18,7 @@ import { AgentCard }    from './components/AgentCard'
 import { BuilderCard }  from './components/BuilderCard'
 import { TryIt }        from './components/TryIt'
 import { ActionInbox }   from './components/ActionInbox'
+import { Faq }           from './components/Faq'
 import Landing          from './pages/Landing'
 import Receipt          from './pages/Receipt'
 import AgentProfile     from './pages/AgentProfile'
@@ -62,6 +63,7 @@ function AppPage() {
 
         </div>
 
+        <Faq />
         <BuilderCard />
       </main>
 
