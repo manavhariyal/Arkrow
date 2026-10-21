@@ -11,6 +11,9 @@ import { useProtocolInfo } from '../protocol'
 import { ConfirmDialog } from './ConfirmDialog'
 import { useHashParams, parsePrefill, buildRequestLink, copyLink } from '../links'
 
+// Longest deadline the app allows while Arkrow is new (the contract itself has no upper limit).
+const MAX_DEADLINE_DAYS = 7
+
 // Kept aside for the network fee so a job never uses the very last of the wallet's USDC.
 const GAS_RESERVE = 20_000_000_000_000_000n // 0.02 USDC
 
@@ -56,6 +59,7 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
     if (!isAddress(worker)) return 'Worker address is not valid.'
     const days = parseFloat(deadlineDays)
     if (isNaN(days) || days < 1) return 'Deadline must be at least 1 day.'
+    if (days > MAX_DEADLINE_DAYS) return `Deadline can be at most ${MAX_DEADLINE_DAYS} days while Arkrow is new.`
     if (info.paused) return 'New jobs are paused for now. Please try again later.'
     if (!/^\d+(\.\d{1,18})?$/.test(amount.trim())) return 'Enter the amount as a plain number, like 1.50.'
     const amt = parseFloat(amount)
@@ -193,13 +197,14 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
               style={inputStyle}
             />
           </Field>
-          <Field label="Deadline (days)">
+          <Field label="Deadline (days)" hint="1 to 7">
             <input
               type="number"
               value={deadlineDays}
               onChange={e => setDeadlineDays(e.target.value)}
               placeholder="7"
               min="1"
+              max={MAX_DEADLINE_DAYS}
               step="1"
               className="w-full tabular text-sm px-3 py-2.5 rounded-lg outline-none transition-all"
               style={inputStyle}
