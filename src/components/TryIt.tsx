@@ -1,12 +1,21 @@
 import { toast } from 'sonner'
+import { IS_MAINNET } from '../arkrow'
 
-const NETWORK = [
-  { label: 'Network name', value: 'Arc Testnet' },
-  { label: 'RPC URL', value: 'https://rpc.testnet.arc.io' },
-  { label: 'Chain ID', value: '5042002' },
-  { label: 'Currency symbol', value: 'USDC' },
-  { label: 'Block explorer', value: 'https://explorer.testnet.arc.io' },
-]
+const NETWORK = IS_MAINNET
+  ? [
+      { label: 'Network name', value: 'Arc' },
+      { label: 'RPC URL', value: 'https://rpc.mainnet.arc.io' },
+      { label: 'Chain ID', value: '5042' },
+      { label: 'Currency symbol', value: 'USDC' },
+      { label: 'Block explorer', value: 'https://explorer.arc.io' },
+    ]
+  : [
+      { label: 'Network name', value: 'Arc Testnet' },
+      { label: 'RPC URL', value: 'https://rpc.testnet.arc.io' },
+      { label: 'Chain ID', value: '5042002' },
+      { label: 'Currency symbol', value: 'USDC' },
+      { label: 'Block explorer', value: 'https://explorer.testnet.arc.io' },
+    ]
 
 async function copy(value: string) {
   try {
@@ -30,7 +39,7 @@ export function TryIt() {
 
       <div className="px-5 pb-5 flex flex-col gap-4 text-sm" style={{ color: 'var(--ink-2)' }}>
         <div>
-          <p className="font-medium" style={{ color: 'var(--ink)' }}>1. Add Arc Testnet to your wallet</p>
+          <p className="font-medium" style={{ color: 'var(--ink)' }}>1. Add {IS_MAINNET ? 'Arc' : 'Arc Testnet'} to your wallet</p>
           <p className="text-sm mt-1">Click any value to copy it.</p>
           <dl className="mt-2 flex flex-col gap-1.5">
             {NETWORK.map(n => (
@@ -52,20 +61,31 @@ export function TryIt() {
         </div>
 
         <div>
-          <p className="font-medium" style={{ color: 'var(--ink)' }}>2. Get free testnet USDC</p>
-          <p className="text-sm mt-1">
-            Open the{' '}
-            <a
-              href="https://faucet.circle.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-4"
-              style={{ color: 'var(--ink)' }}
-            >
-              Circle faucet
-            </a>
-            , choose <b>Arc Testnet</b> and <b>USDC</b>, and paste your address.
-          </p>
+          {IS_MAINNET ? (
+            <>
+              <p className="font-medium" style={{ color: 'var(--ink)' }}>2. Get a little USDC on Arc</p>
+              <p className="text-sm mt-1">
+                Withdraw USDC to your wallet from an exchange that supports Arc, and pick the <b>Arc</b> network on the withdrawal screen. This is real money, so start with 1 to 3 USDC.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="font-medium" style={{ color: 'var(--ink)' }}>2. Get free testnet USDC</p>
+              <p className="text-sm mt-1">
+                Open the{' '}
+                <a
+                  href="https://faucet.circle.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4"
+                  style={{ color: 'var(--ink)' }}
+                >
+                  Circle faucet
+                </a>
+                , choose <b>Arc Testnet</b> and <b>USDC</b>, and paste your address.
+              </p>
+            </>
+          )}
         </div>
 
         <div>
