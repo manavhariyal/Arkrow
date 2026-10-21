@@ -118,12 +118,12 @@ function MoneyCard() {
         className="flex h-3 mt-5 rounded-full overflow-hidden"
         style={{ border: '1.5px solid var(--ink)' }}
       >
-        <div style={{ width: '97.5%', background: 'var(--saffron)' }} />
-        <div style={{ width: '2.5%', background: 'var(--ink)' }} />
+        <div style={{ width: '99.25%', background: 'var(--saffron)' }} />
+        <div style={{ width: '0.75%', background: 'var(--ink)' }} />
       </div>
       <div className="flex justify-between mt-2 text-sm tabular">
-        <span style={{ color: 'var(--ink)' }}>Worker <b className="font-mono">4.8750</b></span>
-        <span style={{ color: 'var(--ink-2)' }}>Fee 2.5% <b className="font-mono">0.1250</b></span>
+        <span style={{ color: 'var(--ink)' }}>Worker <b className="font-mono">4.9625</b></span>
+        <span style={{ color: 'var(--ink-2)' }}>Fee 0.75% <b className="font-mono">0.0375</b></span>
       </div>
 
       <div className="flex items-center mt-5 pt-4" style={{ borderTop: '1px dashed var(--border-strong)' }}>
