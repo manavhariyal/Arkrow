@@ -49,6 +49,19 @@
 @keyframes flap{50%{transform:scaleX(.82) skewY(6deg)}}
 .lp .z1{z-index:1}.lp .z2{z-index:2}.lp .z5{z-index:5}
 .lp .wob{filter:url(#wobble)}
+.lp .plane-lane{height:52px;margin-bottom:22px}
+.lp .vh{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lp .tow{position:absolute;left:0;top:clamp(74px,10.5svh,104px);z-index:5;width:clamp(320px,36vw,540px);pointer-events:none;will-change:transform;animation:tow-fly 34s linear 1.2s infinite;transform:translateX(-110%)}
+.lp .tow-svg{display:block;width:100%;height:auto;overflow:visible}
+.lp .tow-bob{animation:tow-bob 3.4s ease-in-out infinite}
+.lp .tow-t{font-family:"Instrument Serif",Georgia,serif;font-size:44px;fill:#1B1A19;letter-spacing:-.005em}
+.lp .tow-flag{transform-box:fill-box;transform-origin:100% 50%;animation:tow-wave 1.5s ease-in-out infinite}
+.lp .tow-prop{transform-box:fill-box;transform-origin:50% 50%;animation:tow-spin .12s linear infinite}
+@keyframes tow-fly{0%{transform:translateX(-110%)}62%,100%{transform:translateX(100vw)}}
+@keyframes tow-bob{0%,100%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(-7px) rotate(.8deg)}}
+@keyframes tow-wave{0%,100%{transform:skewY(-1.4deg) scaleX(1)}50%{transform:skewY(1.8deg) scaleX(.985)}}
+@keyframes tow-spin{50%{transform:scaleY(.35)}}
+@media (prefers-reduced-motion:reduce){.lp .tow,.lp .tow-bob,.lp .tow-flag,.lp .tow-prop{animation:none!important}.lp .tow{transform:translateX(6vw)}}
 @media (prefers-reduced-motion:reduce){.lp .cloud,.lp .ark-wrap,.lp .ark-ship,.lp .flag,.lp .sun .rays{animation:none!important}.lp .cloud{transform:translateX(70vw)}}
 @media (max-width:760px){.lp .nav-links a.l{display:none}.lp h1{font-size:clamp(44px,13vw,64px)}}
 /* ---------- see it work (laptop zoom) ---------- */
