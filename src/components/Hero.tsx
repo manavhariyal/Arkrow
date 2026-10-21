@@ -1,6 +1,6 @@
 import { useReadContract } from 'wagmi'
 import { motion } from 'framer-motion'
-import { ARKROW_ADDRESS, ARKROW_ABI, ARKROW_CHAIN_ID, formatNativeUsdc, NETWORK_NAME, IS_MAINNET } from '../arkrow'
+import { ARKROW_ADDRESS, ARKROW_ABI, ARKROW_CHAIN_ID, formatNativeUsdc, shortenAddr, buildExplorerAddr, NETWORK_NAME, IS_MAINNET } from '../arkrow'
 
 export function Hero() {
   const { data: jobCounter } = useReadContract({
@@ -31,18 +31,6 @@ export function Hero() {
     >
       <MoneyCard />
 
-      <p
-        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-5"
-        style={{
-          background: 'rgba(255,253,248,0.8)',
-          border: '1.5px solid var(--ink)',
-          color: 'var(--ink)',
-        }}
-      >
-        <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--coral)' }} />
-        Live on {NETWORK_NAME}
-      </p>
-
       <h1
         className="font-serif text-5xl sm:text-6xl lg:text-7xl text-balance mb-4"
         style={{ color: 'var(--ink)', letterSpacing: '-0.015em', lineHeight: 0.98, maxWidth: '12em' }}
@@ -55,6 +43,24 @@ export function Hero() {
         reputation — on Arc.
       </p>
 
+      <div className="flex flex-wrap items-center gap-3 mb-8">
+        <button
+          type="button"
+          onClick={() => document.getElementById('post-job')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          className="px-6 py-3 rounded-xl text-base font-medium transition-all active:scale-[0.98]"
+          style={{ background: 'var(--ink)', color: '#FFF', border: 'none', boxShadow: '3px 3px 0 var(--saffron)' }}
+        >
+          Post a job
+        </button>
+        <a
+          href="#/guide"
+          className="px-6 py-3 rounded-xl text-base font-medium transition-all hover:opacity-80"
+          style={{ border: '1.5px solid var(--ink)', color: 'var(--ink)', textDecoration: 'none', background: 'rgba(255,253,248,0.8)' }}
+        >
+          Use it in your agent
+        </a>
+      </div>
+
       {/* Stats strip */}
       <div
         className="grid grid-cols-2 sm:inline-flex w-full sm:w-auto rounded-2xl overflow-hidden"
@@ -66,12 +72,21 @@ export function Hero() {
         <Stat label="Dispute expiry" value="14 days" />
       </div>
 
-      <p
-        className="mt-5 text-[13px]"
-        style={{ color: 'var(--muted)' }}
-      >
-        {IS_MAINNET ? 'Unaudited app. Use small amounts only.' : 'Unaudited testnet app. Use small amounts only.'}
-      </p>
+      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <a
+          href={buildExplorerAddr(ARKROW_ADDRESS)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium"
+          style={{ border: '1.5px solid var(--ink)', color: 'var(--ink)', textDecoration: 'none', background: 'rgba(255,253,248,0.8)' }}
+        >
+          {NETWORK_NAME} contract
+          <span className="font-mono">{shortenAddr(ARKROW_ADDRESS)}</span>
+        </a>
+        <span className="text-[13px]" style={{ color: 'var(--muted)' }}>
+          {IS_MAINNET ? 'Unaudited app. Use small amounts only.' : 'Unaudited testnet app. Use small amounts only.'}
+        </span>
+      </div>
     </motion.section>
   )
 }

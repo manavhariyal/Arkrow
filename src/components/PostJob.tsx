@@ -158,7 +158,8 @@ export function PostJob({ onJobCreated }: { onJobCreated?: () => void }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1.0] }}
-      className="card p-5 sm:p-6 flex flex-col gap-4"
+      id="post-job"
+      className="card p-5 sm:p-6 flex flex-col gap-4 scroll-mt-20"
     >
       <div>
         <h2 className="font-serif text-xl" style={{ color: 'var(--ink)' }}>Post a job</h2>
