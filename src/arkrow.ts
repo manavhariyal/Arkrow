@@ -1,11 +1,11 @@
 /**
  * Arkrow contract config — ABI extracted from compiled artifact.
- * Deployed on Arc Testnet.
+ * Deployed on Arc Mainnet.
  */
 
-export const ARKROW_ADDRESS = '0x44e6aab4a0850b7cbe8c1502ffbabff9dc46ee7c' as const
+export const ARKROW_ADDRESS = '0x4e68ca43deec10cec1e3644c339ae3a07eb62deb' as const
 
-export const ARKROW_CHAIN_ID: number = 5042002 // Arc Testnet (mainnet = 5042)
+export const ARKROW_CHAIN_ID: number = 5042 // Arc Mainnet (testnet = 5042002)
 
 export const IS_MAINNET = ARKROW_CHAIN_ID === 5042
 export const NETWORK_NAME = IS_MAINNET ? 'Arc Mainnet' : 'Arc Testnet'
